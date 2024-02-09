@@ -1,22 +1,20 @@
 
-import { useRuntimeConfig, createError } from '#imports'
+import { useRuntimeConfig, useStorage } from '#imports'
 import { getRequestIP, setCookie } from 'h3'
 import * as csrf from './utils/uncsrf'
 import { useCsrfKey } from './utils/useCsrfKey'
+import type { NitroApp } from 'nitropack'
 
-import type { StorageMounts } from 'nitropack'
-type Storage = Partial<StorageMounts[string]>
+type NitroAppPlugin = (nitro: NitroApp) => void
+
+function defineNitroPlugin(def: NitroAppPlugin): NitroAppPlugin {
+  return def
+}
+
+// type Storage = Partial<StorageMounts[string]>
 
 export default defineNitroPlugin(async nitro => {
   const { uncsrf } = useRuntimeConfig()
-
-	const storage = useStorage()
-	const { default:driver } = await import(`unstorage/drivers/${ uncsrf?.storage?.driver || 'memory' }`)
-	if (!driver) throw createError('Must provide an unstorage valid driver for csrf storage')
-
-	const options:Storage = { ...uncsrf?.storage }
-	delete options.driver
-	storage.mount('uncsrf', driver(options))
 
   nitro.hooks.hook('render:html', async (_, { event }) => {
 		const storage = useStorage('uncsrf')

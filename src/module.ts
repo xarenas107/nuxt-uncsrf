@@ -1,7 +1,6 @@
 import { defineNuxtModule, useLogger, createResolver, addServerHandler, addServerPlugin, addImportsDir } from "@nuxt/kit"
 import { defu } from 'defu'
 import type { ModuleOptions } from './types'
-
 export * from './types'
 
 const configKey = "uncsrf"
@@ -24,7 +23,6 @@ export default defineNuxtModule<ModuleOptions>({
   },
   setup (options, nuxt) {
     const logger = useLogger(`nuxt:${configKey}`)
-
     const { resolve } = createResolver(import.meta.url)
     const runtimeDir = resolve('./runtime')
     const serverDir = resolve(runtimeDir,'server')
@@ -35,6 +33,11 @@ export default defineNuxtModule<ModuleOptions>({
 		// Add default options
 		const runtime = nuxt.options.runtimeConfig
 		runtime.uncsrf = defu(runtime.uncsrf,options)
+
+    // Mount storage
+    nuxt.hook('nitro:config',async nitro => {
+      if (nitro.storage) nitro.storage['uncsrf'] = runtime.uncsrf?.storage
+    })
 
 		// Import server functions
     addServerHandler({ handler: resolve(serverDir,'middleware'), middleware:true })

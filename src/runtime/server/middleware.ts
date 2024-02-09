@@ -1,9 +1,11 @@
-import { getRequestIP, getCookie } from 'h3'
+import { getRequestIP, getCookie, H3Event } from 'h3'
 import * as csrf from './utils/uncsrf'
+import { useRuntimeConfig, useStorage } from '#imports'
 import { useCsrfKey } from './utils/useCsrfKey'
 
 import type { ModuleOptions } from '../../types'
 import type { Options } from './utils/uncsrf'
+import type { NitroRouteRules } from 'nitropack'
 
 const error = {
 	name: 'BadScrfToken',
@@ -13,8 +15,10 @@ const error = {
 
 type Uncsrf = ModuleOptions & { encrypt:Options }
 
+const getRouteRules = (event:H3Event):NitroRouteRules => event.context._nitro.routeRules
+
 export default defineEventHandler(async event => {
-	const { uncsrf } = getRouteRules(event) ?? {}
+	const { uncsrf } = getRouteRules(event)
 	const runtime = useRuntimeConfig(event)
 
   const isApi = event.path.startsWith('/api')
