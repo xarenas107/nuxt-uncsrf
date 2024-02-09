@@ -1,6 +1,6 @@
-import { getRequestIP, getCookie, H3Event } from 'h3'
+import { getRequestIP, getCookie, H3Event, defineEventHandler } from 'h3'
 import * as csrf from './utils/uncsrf'
-import { useRuntimeConfig, useStorage } from '#imports'
+import { useRuntimeConfig, useStorage, createError } from '#imports'
 import { useCsrfKey } from './utils/useCsrfKey'
 
 import type { ModuleOptions } from '../../types'
