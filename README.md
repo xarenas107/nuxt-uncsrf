@@ -36,6 +36,20 @@ export default defineNuxtConfig({
 })
 ```
 
+> You can customize storage
+
+```js
+// define storage on `nuxt.config.ts`
+export default defineNuxtConfig({
+  uncsrf:{
+    storage:{
+      driver:'memory'
+    }
+  }
+})
+
+```
+
 That's it! You can now use @nuxt/uncsrf in your Nuxt app ✨
 
 <!-- Badges -->
