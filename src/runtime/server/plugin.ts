@@ -31,7 +31,7 @@ export default defineNitroPlugin(async nitro => {
     }
 
     const token = await csrf.create(secret, encrypt)
-		setCookie(event,'x-csrf-token',token)
+		setCookie(event,uncsrf.cookieKey,token)
   })
 
 })

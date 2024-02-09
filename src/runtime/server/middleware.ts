@@ -30,7 +30,7 @@ export default defineEventHandler(async event => {
 
 		const storage = useStorage('uncsrf')
 		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
-		const token = getCookie(event,'x-csrf-token') ?? ''
+		const token = getCookie(event,runtime.uncsrf.cookieKey) ?? ''
 		const secret = await storage.getItem(ip) as string
 
     config.encrypt.secret = await useCsrfKey(config)

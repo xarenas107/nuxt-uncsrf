@@ -7,12 +7,11 @@ const configKey = "uncsrf"
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: '@nuxt/${configKey}',
+    name: `@nuxt/${configKey}`,
     configKey
   },
   // Default configuration options of the Nuxt module
   defaults: {
-    https: process.env.NODE_ENV === 'production',
     cookieKey: 'x-csrf-token',
 		storage:{
 			driver:'memory',
@@ -33,6 +32,7 @@ export default defineNuxtModule<ModuleOptions>({
 		// Add default options
 		const runtime = nuxt.options.runtimeConfig
 		runtime.uncsrf = defu(runtime.uncsrf,options)
+    runtime.public.uncsrf = defu(runtime.public.uncsrf,{ cookieKey: options.cookieKey })
 
     // Mount storage
     nuxt.hook('nitro:config',async nitro => {

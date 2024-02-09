@@ -4,7 +4,6 @@ import type { EncryptAlgorithm } from './runtime/server/utils/uncsrf'
 import type { HTTPMethod } from 'h3'
 
 export interface ModuleOptions {
-  https?: boolean
   cookieKey?: string
   encrypt:{
     secret?: Buffer
@@ -29,5 +28,9 @@ declare module 'nitropack' {
 
 export interface ModuleRuntimeConfig {
   uncsrf?:ModuleOptions
+}
+
+export interface ModulePublicRuntimeConfig {
+  uncsrf?:Pick<ModuleOptions,'cookieKey'>
 }
 
