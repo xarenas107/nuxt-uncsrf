@@ -1,6 +1,22 @@
 # Changelog
 
 
+## v1.1.0
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.0.4...v1.1.0)
+
+### 🚀 Enhancements
+
+- Add cookieKey customization option ([640928e](https://github.com/xarenas107/nuxt-uncsrf/commit/640928e))
+
+### 🏡 Chore
+
+- Update docs ([afee3cb](https://github.com/xarenas107/nuxt-uncsrf/commit/afee3cb))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.0.4
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.0.3...v1.0.4)
