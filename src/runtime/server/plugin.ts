@@ -11,8 +11,6 @@ function defineNitroPlugin(def: NitroAppPlugin): NitroAppPlugin {
   return def
 }
 
-// type Storage = Partial<StorageMounts[string]>
-
 export default defineNitroPlugin(async nitro => {
   const { uncsrf } = useRuntimeConfig()
 
@@ -20,9 +18,7 @@ export default defineNitroPlugin(async nitro => {
 		const storage = useStorage('uncsrf')
 		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
 
-		const exist = await storage.hasItem(ip)
-		if (!exist) await storage.setItem(ip,csrf.randomSecret())
-
+		await storage.setItem(ip,csrf.randomSecret())
 		const secret = await storage.getItem(ip) as string
 
     const encrypt = {
