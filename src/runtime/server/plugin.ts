@@ -18,7 +18,8 @@ export default defineNitroPlugin(async nitro => {
 		const storage = useStorage('uncsrf')
 		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
 
-		await storage.setItem(ip,csrf.randomSecret())
+    const exist = await storage.hasItem(ip)
+    if (!exist) await storage.setItem(ip,csrf.randomSecret())
 		const secret = await storage.getItem(ip) as string
 
     const encrypt = {
