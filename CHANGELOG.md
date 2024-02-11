@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.1.1
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.0...v1.1.1)
+
+### 🏡 Chore
+
+- Update token every time render html ([4a65409](https://github.com/xarenas107/nuxt-uncsrf/commit/4a65409))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.1.0
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.0.4...v1.1.0)
