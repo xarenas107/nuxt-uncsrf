@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.1.2
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.1...v1.1.2)
+
+### 🩹 Fixes
+
+- Undo last update do to unnespected bugs ([8cc9bbb](https://github.com/xarenas107/nuxt-uncsrf/commit/8cc9bbb))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.1.1
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.0...v1.1.1)
