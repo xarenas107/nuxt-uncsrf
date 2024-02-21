@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.1.3
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.2...v1.1.3)
+
+### 🩹 Fixes
+
+- Solve wrong storage driver options ([d6d0b8a](https://github.com/xarenas107/nuxt-uncsrf/commit/d6d0b8a))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.1.2
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.1...v1.1.2)
