@@ -1,5 +1,5 @@
 import type { StorageMounts } from 'nitropack'
-import type { NuxtError } from '#app'
+import type { NuxtError } from 'nuxt/app'
 import type { EncryptAlgorithm } from './runtime/server/utils/uncsrf'
 import type { HTTPMethod } from 'h3'
 
@@ -9,7 +9,7 @@ export interface ModuleOptions {
     secret?: Buffer
     algorithm?: EncryptAlgorithm
   },
-	storage: StorageMounts[string]
+	storage?: StorageMounts[string]
 }
 
 type CsrfRules = {

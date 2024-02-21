@@ -10,12 +10,8 @@ export default defineNuxtModule<ModuleOptions>({
     name: `@nuxt/${configKey}`,
     configKey
   },
-  // Default configuration options of the Nuxt module
   defaults: {
     cookieKey: 'x-csrf-token',
-		storage:{
-			driver:'memory',
-		},
     encrypt: {
       algorithm:'aes-256-cbc'
     },
@@ -33,11 +29,6 @@ export default defineNuxtModule<ModuleOptions>({
 		const runtime = nuxt.options.runtimeConfig
 		runtime.uncsrf = defu(runtime.uncsrf,options)
     runtime.public.uncsrf = defu(runtime.public.uncsrf,{ cookieKey: options.cookieKey })
-
-    // Mount storage
-    nuxt.hook('nitro:config',async nitro => {
-      if (nitro.storage) nitro.storage['uncsrf'] = runtime.uncsrf?.storage
-    })
 
 		// Import server functions
     addServerHandler({ handler: resolve(serverDir,'middleware'), middleware:true })

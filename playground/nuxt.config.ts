@@ -5,4 +5,10 @@ export default defineNuxtConfig({
     autoImport: true,
     injectAtEnd: true,
   },
+  uncsrf:{
+    storage:{
+      driver: 'fs',
+      base: './playground/db'
+    }
+  }
 })

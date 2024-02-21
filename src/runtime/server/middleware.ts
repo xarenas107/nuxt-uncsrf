@@ -7,12 +7,6 @@ import type { ModuleOptions } from '../../types'
 import type { Options } from './utils/uncsrf'
 import type { NitroRouteRules } from 'nitropack'
 
-const error = {
-	name: 'BadScrfToken',
-	statusMessage: 'Csrf Token Mismatch',
-	statusCode: 403,
-}
-
 type Uncsrf = ModuleOptions & { encrypt:Options }
 
 const getRouteRules = (event:H3Event):NitroRouteRules => event.context._nitro.routeRules
@@ -38,6 +32,13 @@ export default defineEventHandler(async event => {
     // Verify the incoming csrf token
     const encrypt = config.encrypt
     const isValid = await csrf.verify(secret, token, encrypt)
+
+    const error = {
+      name: 'BadScrfToken',
+      statusMessage: 'Csrf Token Mismatch',
+      statusCode: 403,
+    }
+
 		if (!isValid) throw createError(uncsrf?.error ?? error)
 	}
 

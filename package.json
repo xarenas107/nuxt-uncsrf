@@ -31,13 +31,6 @@
   "files": [
     "dist"
   ],
-  "build": {
-    "externals": [
-      "h3",
-      "nitropack",
-      "unstorage"
-    ]
-  },
   "scripts": {
     "prepare": "nuxt-module-build prepare",
     "prepack": "nuxt-module-build build",
@@ -53,7 +46,7 @@
   "dependencies": {
     "@nuxt/kit": "^3.10.1",
     "defu": "^6.1.4",
-    "h3": "^1.10.1",
+    "h3": "^1.10.2",
     "nitropack": "^2.8.1",
     "unstorage": "^1.10.1"
   },
@@ -66,7 +59,7 @@
     "@types/node": "^20.11.9",
     "changelogen": "^0.5.5",
     "eslint": "^8.56.0",
-    "nuxt": "^3.10.1",
+    "nuxt": "^3.10.2",
     "vitest": "^1.2.2"
   }
 }
