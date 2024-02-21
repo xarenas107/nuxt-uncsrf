@@ -15,6 +15,9 @@ export default defineNuxtModule<ModuleOptions>({
     encrypt: {
       algorithm:'aes-256-cbc'
     },
+    storage:{
+      driver:'memory'
+    }
   },
   setup (options, nuxt) {
     const logger = useLogger(`nuxt:${configKey}`)
