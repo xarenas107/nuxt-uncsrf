@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.1.5
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.4...v1.1.5)
+
+### 🏡 Chore
+
+- Save item as object in storage ([723ad26](https://github.com/xarenas107/nuxt-uncsrf/commit/723ad26))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.1.4
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.3...v1.1.4)
