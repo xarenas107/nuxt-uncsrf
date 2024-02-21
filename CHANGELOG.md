@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.1.4
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.3...v1.1.4)
+
+### 🩹 Fixes
+
+- Set default storage as memory ([eccf6c2](https://github.com/xarenas107/nuxt-uncsrf/commit/eccf6c2))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.1.3
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.2...v1.1.3)
