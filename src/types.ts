@@ -4,6 +4,7 @@ import type { EncryptAlgorithm } from './runtime/server/utils/uncsrf'
 import type { HTTPMethod } from 'h3'
 
 export interface ModuleOptions {
+  ttl?:number
   cookieKey?: string
   encrypt:{
     secret?: Buffer

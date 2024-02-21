@@ -7,6 +7,13 @@ import type { NitroApp,  StorageMounts } from 'nitropack'
 
 type NitroAppPlugin = (nitro: NitroApp) => void
 
+interface Uncsrf {
+  uncsrf?:{
+    token:string,
+    updatedAt:number
+  }
+}
+
 function defineNitroPlugin(def: NitroAppPlugin): NitroAppPlugin {
   return def
 }
@@ -15,7 +22,7 @@ export default defineNitroPlugin(async nitro => {
   const { uncsrf } = useRuntimeConfig()
 
   // Define storage
-  const storage = useStorage()
+  const storage = useStorage<Uncsrf>()
   const { default:driver } = await import(`unstorage/drivers/${uncsrf.storage.driver || "memory" }`)
   const config = uncsrf.storage as StorageMounts[string]
   const keys = Object.keys(config)
@@ -31,16 +38,26 @@ export default defineNitroPlugin(async nitro => {
 		const storage = useStorage('uncsrf')
 		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
 
-    const exist = await storage.hasItem(ip)
-    if (!exist) await storage.setItem(ip,csrf.randomSecret())
-		const secret = await storage.getItem(ip) as string
+    const now = Date.now()
+    let item = await storage.getItem(ip)
+
+    const endAt = (item?.uncsrf?.updatedAt || 0) + uncsrf.ttl
+    if (!item?.uncsrf || endAt <= now) {
+      item = item || {}
+      item.uncsrf = {
+        token: csrf.randomSecret(),
+        updatedAt: now
+      }
+      await storage.setItem(ip,item)
+    }
+		const secret = await storage.getItem(ip)
 
     const encrypt = {
       ...uncsrf.encrypt,
       secret: await useCsrfKey(uncsrf)
     }
 
-    const token = await csrf.create(secret, encrypt)
+    const token = await csrf.create(secret?.uncsrf?.token, encrypt)
 		setCookie(event,uncsrf.cookieKey,token)
   })
 

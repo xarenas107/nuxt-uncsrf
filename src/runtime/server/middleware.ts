@@ -22,16 +22,16 @@ export default defineEventHandler(async event => {
     // Protect methods
 		if (uncsrf?.methods && !uncsrf?.methods?.includes(event.method)) return
 
-		const storage = useStorage('uncsrf')
+		const storage = useStorage<{ uncsrf?:string }>('uncsrf')
 		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
 		const token = getCookie(event,runtime.uncsrf.cookieKey) ?? ''
-		const secret = await storage.getItem(ip) as string
+		const item = await storage.getItem(ip)
 
     config.encrypt.secret = await useCsrfKey(config)
 
     // Verify the incoming csrf token
     const encrypt = config.encrypt
-    const isValid = await csrf.verify(secret, token, encrypt)
+    const isValid = await csrf.verify(item?.uncsrf?.token, token, encrypt)
 
     const error = {
       name: 'BadScrfToken',
