@@ -35,7 +35,7 @@ export default defineNitroPlugin(async nitro => {
   storage.mount('uncsrf',driver(options))
 
   nitro.hooks.hook('render:html', async (_, { event }) => {
-		const storage = useStorage('uncsrf')
+		const storage = useStorage<Uncsrf>('uncsrf')
 		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
 
     const now = Date.now()

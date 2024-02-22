@@ -1,13 +1,18 @@
 import { getRequestIP, getCookie, H3Event, defineEventHandler } from 'h3'
 import * as csrf from './utils/uncsrf'
-import { useRuntimeConfig, useStorage, createError } from '#imports'
+import { useRuntimeConfig, createError, useStorage } from '#imports'
 import { useCsrfKey } from './utils/useCsrfKey'
 
 import type { ModuleOptions } from '../../types'
 import type { Options } from './utils/uncsrf'
 import type { NitroRouteRules } from 'nitropack'
 
-type Uncsrf = ModuleOptions & { encrypt:Options }
+interface Uncsrf {
+  uncsrf?:{
+    token:string,
+    updatedAt:number
+  }
+}
 
 const getRouteRules = (event:H3Event):NitroRouteRules => event.context._nitro.routeRules
 
@@ -17,12 +22,12 @@ export default defineEventHandler(async event => {
 
   const isApi = event.path.startsWith('/api')
 	if (isApi && uncsrf !== false) {
-		const config = runtime.uncsrf as Uncsrf
+		const config = runtime.uncsrf as ModuleOptions & { encrypt: Options }
 
     // Protect methods
 		if (uncsrf?.methods && !uncsrf?.methods?.includes(event.method)) return
 
-		const storage = useStorage<{ uncsrf?:string }>('uncsrf')
+		const storage = useStorage<Uncsrf>('uncsrf')
 		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
 		const token = getCookie(event,runtime.uncsrf.cookieKey) ?? ''
 		const item = await storage.getItem(ip)

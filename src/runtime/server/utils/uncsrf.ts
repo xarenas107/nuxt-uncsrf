@@ -7,10 +7,10 @@ export interface Options {
 }
 
 type EncryptSecret = Buffer
-type ImportEncryptSecret = (secret?: string, algorithm?: EncryptAlgorithm) => Promise<EncryptSecret>
+type ImportEncryptSecret = (secret?: Buffer | string, algorithm?: EncryptAlgorithm) => Promise<EncryptSecret>
 export type EncryptAlgorithm = CipherCCMTypes | CipherOCBTypes | CipherGCMTypes | string
 type Create = (secret: string, options:Options) => Promise<string>
-type Verify = (secret: string, token: string, options:Options) => Promise<boolean>
+type Verify = (secret: string | undefined, token: string, options:Options) => Promise<boolean>
 
 const algorithm: EncryptAlgorithm = 'aes-256-cbc'
 const encoding = 'base64'
