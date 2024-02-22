@@ -50,14 +50,13 @@ export default defineNitroPlugin(async nitro => {
       }
       await storage.setItem(ip,item)
     }
-		const secret = await storage.getItem(ip)
 
     const encrypt = {
       ...uncsrf.encrypt,
       secret: await useCsrfKey(uncsrf)
     }
 
-    const token = await csrf.create(secret?.uncsrf?.token, encrypt)
+    const token = await csrf.create(item?.uncsrf?.token, encrypt)
 		setCookie(event,uncsrf.cookieKey,token)
   })
 
