@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.1.7
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.6...v1.1.7)
+
+### 🩹 Fixes
+
+- Solve some wrong types ([8507de9](https://github.com/xarenas107/nuxt-uncsrf/commit/8507de9))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.1.6
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.5...v1.1.6)
