@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.1.6
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.5...v1.1.6)
+
+### 💅 Refactors
+
+- Code optimization ([dd9fd86](https://github.com/xarenas107/nuxt-uncsrf/commit/dd9fd86))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.1.5
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.4...v1.1.5)
