@@ -3,7 +3,7 @@ import type { NuxtError } from 'nuxt/app'
 import type { EncryptAlgorithm } from './runtime/server/utils/uncsrf'
 import type { HTTPMethod } from 'h3'
 
-type Storage = StorageMounts[string] | string
+type Storage = StorageMounts[string] | keyof StorageMounts[string]
 
 export interface ModuleOptions {
   ttl?:number
