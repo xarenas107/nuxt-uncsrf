@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.2.2
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.2.1...v1.2.2)
+
+### 🩹 Fixes
+
+- Solve missing configuration types ([b4ee5a6](https://github.com/xarenas107/nuxt-uncsrf/commit/b4ee5a6))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.2.1
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.2.0...v1.2.1)
