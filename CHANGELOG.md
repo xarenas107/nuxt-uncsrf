@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.2.0
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.7...v1.2.0)
+
+### 🚀 Enhancements
+
+- Allow to use mounted storage ([7686935](https://github.com/xarenas107/nuxt-uncsrf/commit/7686935))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.1.7
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.1.6...v1.1.7)
