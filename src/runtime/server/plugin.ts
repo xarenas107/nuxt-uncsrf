@@ -20,7 +20,7 @@ function defineNitroPlugin(def: NitroAppPlugin): NitroAppPlugin {
 
 export default defineNitroPlugin(async nitro => {
   const { uncsrf } = useRuntimeConfig()
-  const config = uncsrf.storage as StorageMounts[string]
+  const config = uncsrf.storage as StorageMounts[string] | string
 
   // Define storage
   if (typeof config !== 'string') {

@@ -1,7 +1,7 @@
 import { defineNuxtModule, useLogger, createResolver, addServerHandler, addServerPlugin, addImportsDir } from "@nuxt/kit"
 import { defu } from 'defu'
 import type { ModuleOptions } from './types'
-export * from './types'
+export type * from './types'
 
 const configKey = "uncsrf"
 
@@ -16,9 +16,9 @@ export default defineNuxtModule<ModuleOptions>({
     encrypt: {
       algorithm:'aes-256-cbc'
     },
-    storage:{
+    storage: {
       driver:'memory'
-    }
+    } as ModuleOptions['storage']
   },
   setup (options, nuxt) {
     const logger = useLogger(`nuxt:${configKey}`)
