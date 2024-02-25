@@ -3,6 +3,8 @@ import type { NuxtError } from 'nuxt/app'
 import type { EncryptAlgorithm } from './runtime/server/utils/uncsrf'
 import type { HTTPMethod } from 'h3'
 
+type Storage = StorageMounts[string] | string
+
 export interface ModuleOptions {
   ttl?:number
   cookieKey?: string
@@ -10,7 +12,7 @@ export interface ModuleOptions {
     secret?: Buffer
     algorithm?: EncryptAlgorithm
   },
-	storage?: StorageMounts[string] | string
+	storage?: Storage
 }
 
 type CsrfRules = {
@@ -33,10 +35,4 @@ export interface ModuleRuntimeConfig {
 
 export interface ModulePublicRuntimeConfig {
   uncsrf?:Pick<ModuleOptions,'cookieKey'>
-}
-
-declare module '@nuxt/schema' {
-  interface NuxtConfig {
-    uncsrf?: ModuleOptions
-  }
 }

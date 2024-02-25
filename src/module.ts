@@ -18,7 +18,7 @@ export default defineNuxtModule<ModuleOptions>({
     },
     storage: {
       driver:'memory'
-    } as ModuleOptions['storage']
+    }
   },
   setup (options, nuxt) {
     const logger = useLogger(`nuxt:${configKey}`)
