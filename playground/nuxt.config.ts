@@ -5,10 +5,14 @@ export default defineNuxtConfig({
     autoImport: true,
     injectAtEnd: true,
   },
-  uncsrf:{
+  nitro:{
     storage:{
-      driver: 'fs',
-      base: './playground/db'
+      'dedicated':{
+        driver:'memory',
+      }
     }
+  },
+  uncsrf:{
+    storage:'dedicated'
   }
 })

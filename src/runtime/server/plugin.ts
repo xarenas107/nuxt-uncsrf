@@ -20,22 +20,26 @@ function defineNitroPlugin(def: NitroAppPlugin): NitroAppPlugin {
 
 export default defineNitroPlugin(async nitro => {
   const { uncsrf } = useRuntimeConfig()
+  const config = uncsrf.storage as StorageMounts[string]
 
   // Define storage
-  const storage = useStorage<Uncsrf>()
-  const { default:driver } = await import(`unstorage/drivers/${uncsrf.storage.driver || "memory" }`)
-  const config = uncsrf.storage as StorageMounts[string]
-  const keys = Object.keys(config)
+  if (typeof config !== 'string') {
+    const storage = useStorage<Uncsrf>()
+    const { default:driver } = await import(`unstorage/drivers/${uncsrf.storage.driver || "memory" }`)
+    const keys = Object.keys(config)
 
-  const options = keys.reduce((_options,key) => {
-    if (key !== 'driver') _options[key] = config[key]
-    return _options
-  },{} as StorageMounts[string])
+    const options = keys.reduce((_options,key) => {
+      if (key !== 'driver') _options[key] = config[key]
+      return _options
+    },{} as StorageMounts[string])
 
-  storage.mount('uncsrf',driver(options))
+    storage.mount('uncsrf',driver(options))
+  }
 
   nitro.hooks.hook('render:html', async (_, { event }) => {
-		const storage = useStorage<Uncsrf>('uncsrf')
+    const name = typeof config === 'string' ? config : 'uncsrf'
+
+		const storage = useStorage<Uncsrf>(name)
 		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
 
     const now = Date.now()
@@ -57,7 +61,9 @@ export default defineNitroPlugin(async nitro => {
     }
 
     const token = await csrf.create(item?.uncsrf?.token, encrypt)
-		setCookie(event,uncsrf.cookieKey,token)
+		setCookie(event,uncsrf.cookieKey,token,{
+      secure: !import.meta.dev
+    })
   })
 
 })

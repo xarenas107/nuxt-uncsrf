@@ -23,11 +23,12 @@ export default defineEventHandler(async event => {
   const isApi = event.path.startsWith('/api')
 	if (isApi && uncsrf !== false) {
 		const config = runtime.uncsrf as ModuleOptions & { encrypt: Options }
+    const name = typeof config.storage === 'string' ? config.storage : 'uncsrf'
 
     // Protect methods
 		if (uncsrf?.methods && !uncsrf?.methods?.includes(event.method)) return
 
-		const storage = useStorage<Uncsrf>('uncsrf')
+		const storage = useStorage<Uncsrf>(name)
 		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
 		const token = getCookie(event,runtime.uncsrf.cookieKey) ?? ''
 		const item = await storage.getItem(ip)

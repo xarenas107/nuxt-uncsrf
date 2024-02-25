@@ -10,7 +10,7 @@ export interface ModuleOptions {
     secret?: Buffer
     algorithm?: EncryptAlgorithm
   },
-	storage?: StorageMounts[string]
+	storage?: StorageMounts[string] | string
 }
 
 type CsrfRules = {
