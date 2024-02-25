@@ -35,3 +35,8 @@ export interface ModulePublicRuntimeConfig {
   uncsrf?:Pick<ModuleOptions,'cookieKey'>
 }
 
+declare module '@nuxt/schema' {
+  interface NuxtConfig {
+    uncsrf?: ModuleOptions
+  }
+}
