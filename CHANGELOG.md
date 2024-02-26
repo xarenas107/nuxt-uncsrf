@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.2.5
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.2.4...v1.2.5)
+
+### 🩹 Fixes
+
+- Recover from error  when ip changes ([a7b1705](https://github.com/xarenas107/nuxt-uncsrf/commit/a7b1705))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.2.4
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.2.3...v1.2.4)
