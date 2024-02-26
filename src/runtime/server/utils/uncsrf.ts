@@ -19,13 +19,6 @@ type SetCookie = (event: H3Event, token:string) => void
 const encoding:BufferEncoding = 'base64'
 const input:Encoding = 'utf8'
 
-function setError (error:Error) {
-  return createError({
-    ...error,
-    message: `Uncsrf: ${error.message}`
-  })
-}
-
 const catchError = <T>(callback:() => T) => {
   try { return callback() }
   catch(error:any) {
