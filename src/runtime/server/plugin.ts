@@ -1,6 +1,6 @@
 
 import { useRuntimeConfig, useStorage } from '#imports'
-import { getRequestIP, setCookie } from 'h3'
+import { getRequestIP } from 'h3'
 import * as csrf from './utils/uncsrf'
 import { useCsrfKey } from './utils/useCsrfKey'
 import type { NitroApp,  StorageMounts } from 'nitropack'
@@ -49,7 +49,7 @@ export default defineNitroPlugin(async nitro => {
     if (!item?.uncsrf || endAt <= now) {
       item = item || {}
       item.uncsrf = {
-        token: csrf.randomSecret(),
+        token: csrf.encryptToken(ip),
         updatedAt: now
       }
       await storage.setItem(ip,item)
@@ -60,10 +60,7 @@ export default defineNitroPlugin(async nitro => {
       secret: await useCsrfKey(uncsrf)
     }
 
-    const token = await csrf.create(item?.uncsrf?.token, encrypt)
-		setCookie(event,uncsrf.cookieKey,token,{
-      secure: !import.meta.dev
-    })
+    await csrf.create(event,item?.uncsrf?.token, encrypt)
   })
 
 })
