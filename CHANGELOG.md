@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.3.2
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.3.1...v1.3.2)
+
+### 🩹 Fixes
+
+- Set secret key type as string ([8d85212](https://github.com/xarenas107/nuxt-uncsrf/commit/8d85212))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.3.1
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.3.0...v1.3.1)
