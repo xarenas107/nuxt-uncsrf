@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.3.3
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.3.2...v1.3.3)
+
+### 💅 Refactors
+
+- Code improvements ([11ba175](https://github.com/xarenas107/nuxt-uncsrf/commit/11ba175))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.3.2
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.3.1...v1.3.2)
