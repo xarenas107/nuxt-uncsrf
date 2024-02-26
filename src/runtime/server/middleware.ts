@@ -38,7 +38,7 @@ export default defineEventHandler(async event => {
 
     if (token) {
       const decryptedToken = await csrf.decrypt(token,encrypt)
-      const data = csrf.decryptToken(decryptedToken)
+      const data = csrf.decryptToken(event,decryptedToken)
       const current = await storage.getItem(data)
 
       if (current && data !== ip) {
@@ -49,7 +49,7 @@ export default defineEventHandler(async event => {
 
         item = item || {}
         item.uncsrf = {
-          token: csrf.encryptToken(ip),
+          token: csrf.encryptToken(event,ip),
           updatedAt: Date.now()
         }
 

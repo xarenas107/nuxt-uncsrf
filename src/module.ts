@@ -13,6 +13,7 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     ttl: 1000 * 60 * 60 * 24 * 7,
     cookieKey: 'x-csrf-token',
+    secret:'Put your secret key here',
     encrypt: {
       algorithm:'aes-256-cbc'
     },

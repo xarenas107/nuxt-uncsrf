@@ -49,7 +49,7 @@ export default defineNitroPlugin(async nitro => {
     if (!item?.uncsrf || endAt <= now) {
       item = item || {}
       item.uncsrf = {
-        token: csrf.encryptToken(ip),
+        token: csrf.encryptToken(event,ip),
         updatedAt: now
       }
       await storage.setItem(ip,item)
