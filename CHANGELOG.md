@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.3.0
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.2.5...v1.3.0)
+
+### 🚀 Enhancements
+
+- Add secret for data encrypted storage ([1d40ac5](https://github.com/xarenas107/nuxt-uncsrf/commit/1d40ac5))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.2.5
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.2.4...v1.2.5)
