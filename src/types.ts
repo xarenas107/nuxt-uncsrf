@@ -35,5 +35,5 @@ export interface ModuleRuntimeConfig {
 }
 
 export interface ModulePublicRuntimeConfig {
-  uncsrf?:Pick<ModuleOptions,'cookieKey'>
+  uncsrf?:{ name?:string }
 }
