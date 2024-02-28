@@ -1,6 +1,26 @@
 # Changelog
 
 
+## v2.0.0
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.3.3...v2.0.0)
+
+### 🚀 Enhancements
+
+- ⚠️  Add cookie options ([e272abd](https://github.com/xarenas107/nuxt-uncsrf/commit/e272abd))
+
+### 🩹 Fixes
+
+- Solve `cookieKey` option changed to `cookie.name` ([f704677](https://github.com/xarenas107/nuxt-uncsrf/commit/f704677))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️  Add cookie options ([e272abd](https://github.com/xarenas107/nuxt-uncsrf/commit/e272abd))
+
+### ❤️ Contributors
+
+- Xavier
+
 ## v1.3.3
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.3.2...v1.3.3)
