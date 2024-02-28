@@ -2,7 +2,6 @@
 import { useRuntimeConfig, useStorage } from '#imports'
 import { getRequestIP } from 'h3'
 import * as csrf from './utils/uncsrf'
-import { useCsrfKey } from './utils/useCsrfKey'
 import type { NitroApp,  StorageMounts } from 'nitropack'
 
 type NitroAppPlugin = (nitro: NitroApp) => void
@@ -42,25 +41,16 @@ export default defineNitroPlugin(async nitro => {
 		const storage = useStorage<Uncsrf>(name)
 		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
 
-    const now = Date.now()
-    let item = await storage.getItem(ip)
+    const updatedAt = Date.now()
+    const item = await storage.getItem(ip) ?? {}
 
     const endAt = (item?.uncsrf?.updatedAt || 0) + uncsrf.ttl
-    if (!item?.uncsrf || endAt <= now) {
-      item = item || {}
-      item.uncsrf = {
-        token: csrf.encryptToken(event,ip),
-        updatedAt: now
-      }
+    const token = await csrf.encrypt(event,ip)
+
+    if (!item?.uncsrf || endAt <= updatedAt) {
+      item.uncsrf = { token, updatedAt }
       await storage.setItem(ip,item)
     }
-
-    const encrypt = {
-      ...uncsrf.encrypt,
-      secret: await useCsrfKey(uncsrf)
-    }
-
-    await csrf.create(event,item?.uncsrf?.token, encrypt)
   })
 
 })

@@ -8,11 +8,11 @@ export function useCsrf() {
   if (import.meta.server) {
 		const app = useNuxtApp()
 		const event = app.ssrContext?.event as H3Event
-		const cookie = event ? getCookie(event,runtime.uncsrf.cookieKey) : ''
-		const csrf = cookie || ''
+		const cookie = event ? getCookie(event,runtime.uncsrf?.cookie?.name) : null
+		const csrf = cookie || null
     return { csrf }
   }
 
-	const token = useCookie(runtime.public.uncsrf.cookieKey)
-  return { csrf:token.value || '' }
+	const token = useCookie<string>(runtime.public.uncsrf?.cookie?.name)
+  return { csrf:token.value || null }
 }

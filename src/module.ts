@@ -12,7 +12,12 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults: {
     ttl: 1000 * 60 * 60 * 24 * 7,
-    cookieKey: 'x-csrf-token',
+    cookie: {
+      name:'x-csrf-token',
+      path: '/',
+      httpOnly: true,
+      sameSite: true
+    },
     secret:'Put your secret key here',
     encrypt: {
       algorithm:'aes-256-cbc'
@@ -33,7 +38,7 @@ export default defineNuxtModule<ModuleOptions>({
 		// Add default options
 		const runtime = nuxt.options.runtimeConfig
 		runtime.uncsrf = defu(runtime.uncsrf,options)
-    runtime.public.uncsrf = defu(runtime.public.uncsrf,{ cookieKey: options.cookieKey })
+    runtime.public.uncsrf = defu(runtime.public.uncsrf,{ cookie: { name:options.cookie?.name } })
 
 		// Import server functions
     addServerHandler({ handler: resolve(serverDir,'middleware'), middleware:true })

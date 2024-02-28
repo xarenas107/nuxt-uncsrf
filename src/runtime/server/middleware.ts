@@ -1,7 +1,6 @@
 import { getRequestIP, getCookie, H3Event, defineEventHandler } from 'h3'
 import * as csrf from './utils/uncsrf'
 import { useRuntimeConfig, createError, useStorage } from '#imports'
-import { useCsrfKey } from './utils/useCsrfKey'
 
 import type { ModuleOptions } from '../../types'
 import type { Options } from './utils/uncsrf'
@@ -21,7 +20,16 @@ export default defineEventHandler(async event => {
 	const runtime = useRuntimeConfig(event)
 
   const isApi = event.path.startsWith('/api')
-	if (isApi && uncsrf !== false) {
+  const isAllowed = isApi && !uncsrf && uncsrf !== false
+
+  if (isAllowed || uncsrf) {
+    const error = {
+      name: 'BadScrfToken',
+      statusMessage: 'Csrf Token Mismatch',
+      message: 'Csrf: Invalid token provided',
+      statusCode: 403,
+    }
+
 		const config = runtime.uncsrf as ModuleOptions & { encrypt: Options }
     const name = typeof config.storage === 'string' ? config.storage : 'uncsrf'
 
@@ -29,46 +37,28 @@ export default defineEventHandler(async event => {
 		if (uncsrf?.methods && !uncsrf?.methods?.includes(event.method)) return
 
 		const storage = useStorage<Uncsrf>(name)
+
 		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
-		let token = getCookie(event,runtime.uncsrf.cookieKey) ?? ''
-		let item = await storage.getItem(ip)
+		let token = getCookie(event,runtime.uncsrf.cookie.name) ?? ''
+    let valid = await csrf.verify(event,ip, token)
 
-    config.encrypt.secret = await useCsrfKey(config)
-    const encrypt = config.encrypt
+    if (token && !valid) {
+      const data = await csrf.decrypt(event,token)
+      if (!data) throw createError(uncsrf?.error ?? error)
+      const item = await storage.getItem(data) ?? {}
 
-    if (token) {
-      const decryptedToken = await csrf.decrypt(token,encrypt)
-      const data = csrf.decryptToken(event,decryptedToken)
-      const current = await storage.getItem(data)
-
-      if (current && data !== ip) {
-        const encrypt = {
-          ...runtime.uncsrf.encrypt,
-          secret: await useCsrfKey(runtime.uncsrf)
-        }
-
-        item = item || {}
-        item.uncsrf = {
-          token: csrf.encryptToken(event,ip),
-          updatedAt: Date.now()
-        }
-
-        token = await csrf.create(event,item?.uncsrf?.token, encrypt)
-        await storage.removeItem(data)
-        await storage.setItem(ip,item)
+      item.uncsrf = {
+        token: await csrf.encrypt(event,ip),
+        updatedAt: Date.now()
       }
+
+      token = item.uncsrf.token
+      await storage.removeItem(data)
+      await storage.setItem(ip,item)
+      valid = true
     }
 
-    // Verify the incoming csrf token
-    const isValid = await csrf.verify(item?.uncsrf?.token, token, encrypt)
-
-    const error = {
-      name: 'BadScrfToken',
-      statusMessage: 'Csrf Token Mismatch',
-      statusCode: 403,
-    }
-
-		if (!isValid) throw createError(uncsrf?.error ?? error)
+		if (!valid) throw createError(uncsrf?.error ?? error)
 	}
 
 })
