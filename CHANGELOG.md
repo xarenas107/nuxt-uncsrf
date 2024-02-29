@@ -1,6 +1,10 @@
 # Changelog
 
 
+## v2.0.1
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.0.0...v2.0.1)
+
 ## v2.0.0
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v1.3.3...v2.0.0)
