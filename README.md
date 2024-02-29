@@ -36,6 +36,18 @@ export default defineNuxtConfig({
 })
 ```
 
+By default csrf protection is applied to all routes except for `/_nuxt` and `/__nuxt` with `GET` method. If you need more control, use nitro route rules.
+
+> Use false to disable protection
+
+```js
+routeRules:{
+  '/locale/**': {
+    uncsrf: false,
+  }
+}
+```
+
 > You can customize storage
 
 ```js
@@ -47,7 +59,23 @@ export default defineNuxtConfig({
     }
   }
 })
+```
 
+> Or use a previously defined storage'
+
+```js
+export default defineNuxtConfig({
+  nitro:{
+    storage:{
+      'security':{
+        driver:'memory',
+      }
+    }
+  },
+  uncsrf:{
+    storage:'security'
+  } 
+})
 ```
 
 That's it! You can now use @nuxt/uncsrf in your Nuxt app ✨
