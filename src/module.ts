@@ -15,7 +15,7 @@ export default defineNuxtModule<ModuleOptions>({
     cookie: {
       name:'x-csrf-token',
       path: '/',
-      httpOnly: true,
+      httpOnly: false,
       sameSite: true
     },
     secret:'Put your secret key here',
