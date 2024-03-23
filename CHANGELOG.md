@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.0.3
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.0.2...v2.0.3)
+
+### 🏡 Chore
+
+- Update packages ([cf00e71](https://github.com/xarenas107/nuxt-uncsrf/commit/cf00e71))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](http://github.com/xarenas107))
+
 ## v2.0.2
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.0.1...v2.0.2)
