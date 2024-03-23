@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v2.0.2
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.0.1...v2.0.2)
+
+### 🩹 Fixes
+
+- Solve missing ip in some cases ([0c1a216](https://github.com/xarenas107/nuxt-uncsrf/commit/0c1a216))
+
+### 🏡 Chore
+
+- Update packages ([e5acf44](https://github.com/xarenas107/nuxt-uncsrf/commit/e5acf44))
+- Update packages ([9e39ced](https://github.com/xarenas107/nuxt-uncsrf/commit/9e39ced))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](http://github.com/xarenas107))
+
 ## v2.0.1
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.0.0...v2.0.1)
