@@ -38,7 +38,10 @@ export default defineEventHandler(async event => {
 
 		const storage = useStorage<Uncsrf>(name)
 
-		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
+		const ip = getRequestIP(event) || getRequestIP(event,{ xForwardedFor:true }) || '::1'
+    if (!event.context.clientAddress) event.context.clientAddress = ip
+
+
 		let token = getCookie(event,runtime.uncsrf.cookie.name) ?? ''
     let valid = await csrf.verify(event,ip, token)
 

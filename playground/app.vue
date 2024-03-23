@@ -1,6 +1,6 @@
 <template>
   <div>
-    Nuxt csrf module playground! {{  { csrf } }}
+    Nuxt csrf module playground! {{ { csrf } }}
   </div>
   <button @click="execute()">
     fetch
