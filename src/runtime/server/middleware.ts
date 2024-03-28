@@ -41,24 +41,28 @@ export default defineEventHandler(async event => {
 		const ip = getRequestIP(event) || getRequestIP(event,{ xForwardedFor:true }) || '::1'
     if (!event.context.clientAddress) event.context.clientAddress = ip
 
-
+    // Get token from request
 		let token = getCookie(event,runtime.uncsrf.cookie.name) ?? ''
+
+    // Validate token
     let valid = await csrf.verify(event,ip, token)
 
     if (token && !valid) {
+      // Obtain decrypted token
       const data = await csrf.decrypt(event,token)
-      if (!data) throw createError(uncsrf?.error ?? error)
-      const item = await storage.getItem(data) ?? {}
+      if (data) {
+        const item = await storage.getItem(data) ?? {}
 
-      item.uncsrf = {
-        token: await csrf.encrypt(event,ip),
-        updatedAt: Date.now()
+        item.uncsrf = {
+          token: await csrf.encrypt(event,ip),
+          updatedAt: Date.now()
+        }
+
+        token = item.uncsrf.token
+        await storage.removeItem(data)
+        await storage.setItem(ip,item)
+        valid = true
       }
-
-      token = item.uncsrf.token
-      await storage.removeItem(data)
-      await storage.setItem(ip,item)
-      valid = true
     }
 
 		if (!valid) throw createError(uncsrf?.error ?? error)
