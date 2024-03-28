@@ -47,11 +47,11 @@
     "@nuxt/kit": "^3.10.1",
     "defu": "^6.1.4",
     "h3": "^1.11.1",
-    "nitropack": "^2.9.4",
+    "nitropack": "^2.9.5",
     "unstorage": "^1.10.2"
   },
   "devDependencies": {
-    "@nuxt/devtools": "latest",
+    "@nuxt/devtools": "^1.1.5",
     "@nuxt/eslint-config": "^0.2.0",
     "@nuxt/module-builder": "^0.5.5",
     "@nuxt/schema": "^3.10.1",
