@@ -1,6 +1,8 @@
-import { getRequestIP, getCookie, H3Event, defineEventHandler } from 'h3'
+import type { H3Event} from 'h3';
+import { getCookie, defineEventHandler } from 'h3'
 import * as csrf from './utils/uncsrf'
 import { useRuntimeConfig, createError, useStorage } from '#imports'
+import { useIP } from './utils/useIP'
 
 import type { ModuleOptions } from '../../types'
 import type { Options } from './utils/uncsrf'
@@ -38,7 +40,7 @@ export default defineEventHandler(async event => {
 
 		const storage = useStorage<Uncsrf>(name)
 
-		const ip = getRequestIP(event) || getRequestIP(event,{ xForwardedFor:true }) || '::1'
+		const ip = useIP(event)
     if (!event.context.clientAddress) event.context.clientAddress = ip
 
     // Get token from request

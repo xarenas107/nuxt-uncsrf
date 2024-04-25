@@ -17,11 +17,10 @@ const input:Encoding = 'utf8'
 
 const catchError = <T>(callback:() => T) => {
   try { return callback() }
-  catch(error:any) {
-    createError({
-      ...error,
-      message: `Uncsrf: ${error.message}`
-    })
+  catch(error) {
+    const err = error as Record<string,unknown>
+    err.message = `Uncsrf: ${err.message}`
+    createError(err)
     return null
   }
 }

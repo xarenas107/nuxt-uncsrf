@@ -1,7 +1,8 @@
 
 import { useRuntimeConfig, useStorage } from '#imports'
-import { getRequestIP } from 'h3'
+import { useIP } from './utils/useIP'
 import * as csrf from './utils/uncsrf'
+
 import type { NitroApp,  StorageMounts } from 'nitropack'
 
 type NitroAppPlugin = (nitro: NitroApp) => void
@@ -39,7 +40,7 @@ export default defineNitroPlugin(async nitro => {
     const name = typeof config === 'string' ? config : 'uncsrf'
 
 		const storage = useStorage<Uncsrf>(name)
-		const ip = getRequestIP(event,{ xForwardedFor:true }) ?? '::1'
+		const ip = useIP(event)
 
     const updatedAt = Date.now()
     const item = await storage.getItem(ip) ?? {}
