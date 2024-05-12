@@ -1,6 +1,24 @@
 # Changelog
 
 
+## v2.0.6
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.0.5...v2.0.6)
+
+### 💅 Refactors
+
+- Minor optimizations ([74e9643](https://github.com/xarenas107/nuxt-uncsrf/commit/74e9643))
+
+### 🏡 Chore
+
+- Use `eslint` flat config ([781c9ce](https://github.com/xarenas107/nuxt-uncsrf/commit/781c9ce))
+- Update `node` packages ([159e2f9](https://github.com/xarenas107/nuxt-uncsrf/commit/159e2f9))
+- **node:** Update packages ([8459217](https://github.com/xarenas107/nuxt-uncsrf/commit/8459217))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](http://github.com/xarenas107))
+
 ## v2.0.5
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.0.4...v2.0.5)
