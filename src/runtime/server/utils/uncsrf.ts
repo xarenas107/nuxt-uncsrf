@@ -1,6 +1,8 @@
 import { createCipheriv, createDecipheriv, randomBytes, randomUUID, createHash } from 'node:crypto'
-import { useRuntimeConfig, createError } from '#imports'
+import { createError } from '#imports'
 import { setCookie } from 'h3'
+import { useRuntimeConfig } from 'nitropack/runtime'
+
 import type { CipherCCMTypes, CipherOCBTypes, CipherGCMTypes, Encoding } from 'node:crypto'
 import type { H3Event } from 'h3'
 export interface Options {
@@ -20,22 +22,23 @@ const catchError = <T>(callback:() => T) => {
   catch(error) {
     const err = error as Record<string,unknown>
     err.message = `Uncsrf: ${err.message}`
-    createError(err)
-    return null
+    throw createError(err)
   }
 }
 
-export const create:Create = async (event,secret) => {
-  const { uncsrf } = useRuntimeConfig(event)
-  setCookie(event,uncsrf.cookie.name,secret,{
+export const createCookie:Create = async (event, secret) => {
+  const runtime = useRuntimeConfig()
+  const { cookie } = runtime.public.uncsrf ?? {}
+
+  setCookie(event, cookie.name, secret, {
     secure: !import.meta.dev,
-    ...uncsrf.cookie
+    ...cookie
   })
   return secret
 }
 
-export const encrypt = (event:H3Event,ip:string) => {
-  const { uncsrf } = useRuntimeConfig(event)
+export const encrypt = (event: H3Event, ip:string) => {
+  const { uncsrf } = useRuntimeConfig()
   const secret = useHash(uncsrf.secret)
 
   return catchError(async () => {
@@ -43,13 +46,12 @@ export const encrypt = (event:H3Event,ip:string) => {
     const cipher = createCipheriv(uncsrf.encrypt.algorithm, secret, iv)
     const encrypted = cipher.update(ip, input, encoding) + cipher.final(encoding)
     const token = `${iv.toString(encoding)}:${ encrypted }`
-    await create(event,token)
     return token
   })
 }
 
-export const decrypt:Decrypt = async (event,token) => {
-  const { uncsrf } = useRuntimeConfig(event)
+export const decrypt:Decrypt = async (event, token) => {
+  const { uncsrf } = useRuntimeConfig()
 
   return catchError(() => {
     const [iv, encrypted] = token.split(':')
@@ -59,11 +61,11 @@ export const decrypt:Decrypt = async (event,token) => {
   })
 }
 
-export const verify:Verify = async (event,secret,token) => {
+export const verify:Verify = async (event, secret, token) => {
   try {
     const [iv, encrypted] = token.split(':')
     if (!iv || !encrypted) return Promise.resolve(false)
-		const decrypted = await decrypt(event,token)
+		const decrypted = await decrypt(event, token)
     return decrypted === secret
 	}
 	catch { return false }
