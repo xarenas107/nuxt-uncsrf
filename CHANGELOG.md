@@ -1,6 +1,35 @@
 # Changelog
 
 
+## v2.1.0
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.0.6...v2.1.0)
+
+### 🚀 Enhancements
+
+- Add `error` module option ([6d9d46a](https://github.com/xarenas107/nuxt-uncsrf/commit/6d9d46a))
+
+### 🩹 Fixes
+
+- **test:** Fix token response test ([e541cc6](https://github.com/xarenas107/nuxt-uncsrf/commit/e541cc6))
+- Solve missing runtime config in certain cases ([4060304](https://github.com/xarenas107/nuxt-uncsrf/commit/4060304))
+- Solve `ssr` missing value on server side ([b556a63](https://github.com/xarenas107/nuxt-uncsrf/commit/b556a63))
+
+### 💅 Refactors
+
+- Reorder imports ([6888b94](https://github.com/xarenas107/nuxt-uncsrf/commit/6888b94))
+- Fuse middleware and nitro plugin ([84f706a](https://github.com/xarenas107/nuxt-uncsrf/commit/84f706a))
+
+### 🏡 Chore
+
+- Update packages ([d290c5d](https://github.com/xarenas107/nuxt-uncsrf/commit/d290c5d))
+- **playground:** Add nuxt compatibility date ([1ed84de](https://github.com/xarenas107/nuxt-uncsrf/commit/1ed84de))
+- **node:** Update dependences ([fe4e037](https://github.com/xarenas107/nuxt-uncsrf/commit/fe4e037))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](http://github.com/xarenas107))
+
 ## v2.0.6
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.0.5...v2.0.6)
