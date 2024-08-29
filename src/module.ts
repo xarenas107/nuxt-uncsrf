@@ -1,4 +1,4 @@
-import { defineNuxtModule, useLogger, createResolver, addServerHandler, addServerPlugin, addImportsDir } from "@nuxt/kit"
+import { defineNuxtModule, useLogger, createResolver, addServerPlugin, addImportsDir } from "@nuxt/kit"
 import { defu } from 'defu'
 import type { ModuleOptions } from './types'
 export type * from './types'
@@ -24,6 +24,12 @@ export default defineNuxtModule<ModuleOptions>({
     },
     storage: {
       driver:'memory'
+    },
+    error:  {
+      name: 'BadScrfToken',
+      statusMessage: 'Csrf Token Mismatch',
+      message: 'Csrf: Invalid token provided',
+      statusCode: 403,
     }
   },
   setup (options, nuxt) {
@@ -36,12 +42,15 @@ export default defineNuxtModule<ModuleOptions>({
 		nuxt.options.build.transpile.push(runtimeDir)
 
 		// Add default options
+    const { cookie } = options
 		const runtime = nuxt.options.runtimeConfig
+    runtime.public.uncsrf = defu(runtime.public.uncsrf,{ cookie })
+
+    delete options?.cookie
 		runtime.uncsrf = defu(runtime.uncsrf,options)
-    runtime.public.uncsrf = defu(runtime.public.uncsrf,{ cookie: { name:options.cookie?.name } })
 
 		// Import server functions
-    addServerHandler({ handler: resolve(serverDir,'middleware'), middleware:true })
+    // addServerHandler({ handler: resolve(serverDir,'middleware'), middleware:true })
     addServerPlugin(resolve(serverDir,'plugin'))
     addImportsDir(resolve(runtimeDir,'composables'))
 
