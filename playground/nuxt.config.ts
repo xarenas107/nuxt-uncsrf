@@ -1,6 +1,7 @@
 export default defineNuxtConfig({
+  compatibilityDate: '2024-08-29',
   modules: ['../src/module'],
-  ssr:false,
+  ssr: false,
   devtools: { enabled: true },
   imports: {
     autoImport: true,
@@ -8,11 +9,13 @@ export default defineNuxtConfig({
   nitro:{
     storage:{
       'dedicated':{
-        driver:'memory',
+        driver:'fs',
+        base: './playground/db'
       }
     }
   },
+
   uncsrf:{
     storage:'dedicated'
-  }
+  },
 })
