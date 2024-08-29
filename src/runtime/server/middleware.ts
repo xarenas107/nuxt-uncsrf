@@ -1,12 +1,11 @@
 import { getCookie, defineEventHandler } from 'h3'
 import * as csrf from './utils/uncsrf'
-import { useRuntimeConfig, createError, useStorage } from '#imports'
+import { useRuntimeConfig, createError } from '#imports'
+import { getRouteRules, useStorage } from 'nitropack/runtime'
 import { useIP } from './utils/useIP'
 
-import type { H3Event} from 'h3';
 import type { ModuleOptions } from '../../types'
 import type { Options } from './utils/uncsrf'
-import type { NitroRouteRules } from 'nitropack'
 
 interface Uncsrf {
   uncsrf?:{
@@ -15,23 +14,15 @@ interface Uncsrf {
   }
 }
 
-const getRouteRules = (event:H3Event):NitroRouteRules => event.context._nitro.routeRules
-
 export default defineEventHandler(async event => {
 	const { uncsrf } = getRouteRules(event)
 	const runtime = useRuntimeConfig(event)
+  const { cookie } = runtime.public.uncsrf ?? {}
 
   const isApi = event.path.startsWith('/api')
   const isAllowed = isApi && !uncsrf && uncsrf !== false
 
   if (isAllowed || uncsrf) {
-    const error = {
-      name: 'BadScrfToken',
-      statusMessage: 'Csrf Token Mismatch',
-      message: 'Csrf: Invalid token provided',
-      statusCode: 403,
-    }
-
 		const config = runtime.uncsrf as ModuleOptions & { encrypt: Options }
     const name = typeof config.storage === 'string' ? config.storage : 'uncsrf'
 
@@ -44,30 +35,33 @@ export default defineEventHandler(async event => {
     if (!event.context.clientAddress) event.context.clientAddress = ip
 
     // Get token from request
-		let token = getCookie(event,runtime.uncsrf.cookie.name) ?? ''
+		let token = getCookie(event, cookie.name) ?? ''
 
     // Validate token
     let valid = await csrf.verify(event,ip, token)
 
     if (token && !valid) {
-      // Obtain decrypted token
+      // Obtain decrypted token (ip)
       const data = await csrf.decrypt(event,token)
+
       if (data) {
         const item = await storage.getItem(data) ?? {}
 
         item.uncsrf = {
-          token: await csrf.encrypt(event,ip),
+          token: await csrf.encrypt(event, ip),
           updatedAt: Date.now()
         }
 
         token = item.uncsrf.token
-        await storage.removeItem(data)
-        await storage.setItem(ip,item)
+
+        const promises = [storage.setItem(ip, item), csrf.createCookie(event, token)]
+        if (data !== ip) promises.push(storage.removeItem(data))
+        await Promise.all(promises)
         valid = true
       }
     }
 
-		if (!valid) throw createError(uncsrf?.error ?? error)
+		if (!valid) throw createError(uncsrf?.error ?? runtime.uncsrf.error)
 	}
 
 })
