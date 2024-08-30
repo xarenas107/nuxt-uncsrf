@@ -36,5 +36,10 @@ export interface ModuleRuntimeConfig {
 }
 
 export interface ModulePublicRuntimeConfig {
-  uncsrf?:{ name?:string }
+  uncsrf?: {
+    name: string,
+    path?: string,
+    httpOnly?: boolean,
+    sameSite?: boolean
+  }
 }
