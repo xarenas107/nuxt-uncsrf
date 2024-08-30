@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.2.0
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.1.1...v2.2.0)
+
+### 🚀 Enhancements
+
+- Add csrf token to  `event.context` ([e480a5c](https://github.com/xarenas107/nuxt-uncsrf/commit/e480a5c))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](http://github.com/xarenas107))
+
 ## v2.1.1
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.1.0...v2.1.1)
