@@ -1,3 +1,3 @@
 export default defineEventHandler(() => {
-  return 'Request recieved on server'
+	return 'Request recieved on server'
 })

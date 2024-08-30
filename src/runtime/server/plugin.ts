@@ -1,125 +1,140 @@
-
-import { useRuntimeConfig } from '#imports'
-import * as csrf from './utils/uncsrf'
 import { getRouteRules, useStorage } from 'nitropack/runtime'
-import type { NitroApp,  StorageMounts } from 'nitropack'
+import type { NitroApp, StorageMounts } from 'nitropack'
 import { createError, getCookie, getRequestIP } from 'h3'
+import * as csrf from './utils/uncsrf'
+import { useRuntimeConfig } from '#imports'
 
 type NitroAppPlugin = (nitro: NitroApp) => void
 
-interface Uncsrf {
-  uncsrf?:{
-    token:string,
-    updatedAt:number
-  }
+type Uncsrf = {
+	uncsrf?: {
+		token: string
+		updatedAt?: number
+	}
+} & {
+	[key: string]: any
+}
+
+declare module 'h3' {
+	interface H3EventContext {
+		security: Uncsrf
+	}
 }
 
 function defineNitroPlugin(def: NitroAppPlugin): NitroAppPlugin {
-  return def
+	return def
 }
 
-export default defineNitroPlugin(async nitro => {
-  const runtime = useRuntimeConfig()
-  const { uncsrf } = runtime
-  const config = uncsrf.storage as StorageMounts[string] | string
+export default defineNitroPlugin(async (nitro) => {
+	const runtime = useRuntimeConfig()
+	const { uncsrf } = runtime
+	const config = uncsrf.storage as StorageMounts[string] | string
+	const name = uncsrf?.storage?.driver || 'memory'
+	const localhost = '127.0.0.1'
 
-  // Define storage
-  if (typeof config !== 'string') {
-    const storage = useStorage<Uncsrf>()
+	// Define storage
+	if (typeof config !== 'string') {
+		const storage = useStorage<Uncsrf>()
 
-    const name = uncsrf?.storage?.driver || "memory"
-    const { default: driver } = await import(`unstorage/drivers/${name}`)
-    const keys = Object.keys(config)
+		const { default: driver } = await import(`unstorage/drivers/${name}`)
+		const keys = Object.keys(config)
 
-    const options = keys.reduce((opts,key) => {
-      if (key !== 'driver') opts[key] = config[key]
-      return opts
-    }, <StorageMounts[string]>{})
+		const options = keys.reduce((opts, key) => {
+			if (key !== 'driver') opts[key] = config[key]
+			return opts
+		}, <StorageMounts[string]>{})
 
-    storage.mount('uncsrf', driver(options))
-  }
+		storage.mount('uncsrf', driver(options))
+	}
 
-  nitro.hooks.hook('request', async (event) => {
-    const { uncsrf } = getRouteRules(event)
-    if (uncsrf === false) return
+	nitro.hooks.hook('request', async (event) => {
+		event.context.security ||= {}
 
-    const { cookie } = runtime.public.uncsrf ?? {}
-    const name = typeof config === 'string' ? config : 'uncsrf'
+		const { uncsrf } = getRouteRules(event)
+		if (uncsrf === false) return
 
-    const storage = useStorage<Uncsrf>(name)
+		const { cookie } = runtime.public.uncsrf ?? {}
+		const name = typeof config === 'string' ? config : 'uncsrf'
 
-    // Get client ip
-    const ip =  getRequestIP(event,{ xForwardedFor:true }) || '127.0.0.1'
-    event.context.clientAddress ??= ip
+		const storage = useStorage<Uncsrf>(name)
 
-    const updatedAt = Date.now()
+		// Get client ip
+		const ip = getRequestIP(event, { xForwardedFor: true }) || localhost
+		event.context.clientAddress ??= ip
 
-    const state = {
-      value: await storage.getItem(ip) ?? {},
-      save: false,
-      valid: false,
-      remove: false,
-    }
+		const updatedAt = Date.now()
+		const value = await storage.getItem(ip) ?? {}
 
-    // Get token from request
-    const token = getCookie(event, cookie.name) ?? ''
-    const endAt = (state.value?.uncsrf?.updatedAt || 0) + (runtime.uncsrf.ttl || 0)
-    const expired = runtime.uncsrf.ttl ? endAt <= updatedAt : false
+		const state = {
+			remove: false,
+			valid: false,
+			save: false,
+			value,
+		}
 
-    if (!state.value?.uncsrf || expired || !token) {
-      state.value.uncsrf= { updatedAt, token }
-      state.save = true
-    }
+		// Get token from request
+		const token = getCookie(event, cookie.name) ?? ''
+		const endAt = (state.value?.uncsrf?.updatedAt || 0) + (runtime.uncsrf.ttl || 0)
+		const expired = runtime.uncsrf.ttl ? endAt <= updatedAt : false
 
-    const api = event.path.startsWith('/api')
-    const defaults = api && !uncsrf
+		if (!state.value?.uncsrf || expired || !token) {
+			const token = await csrf.encrypt(event, ip)
+			state.value.uncsrf = { updatedAt, token }
+			state.save = true
+		}
 
-    if (defaults || uncsrf) {
-      // Protect methods
-      if (!uncsrf?.methods || uncsrf?.methods?.includes(event.method)) {
+		const api = event.path.startsWith('/api')
+		const defaults = api && !uncsrf
 
-        // Validate token
-        state.valid = await csrf.verify(event, ip, token)
+		if (defaults || uncsrf) {
+			// Protect methods
+			if (!uncsrf?.methods || uncsrf?.methods?.includes(event.method)) {
+				// Validate token
+				state.valid = await csrf.verify(event, ip, token)
 
-        if (token && !state.valid) {
-          // Obtain decrypted token (ip)
-          const data = await csrf.decrypt(event,token)
+				if (token && !state.valid) {
+					// Obtain decrypted token (ip)
+					const data = await csrf.decrypt(event, token)
 
-          if (data) {
-            state.value = await storage.getItem(data) ?? {}
-            state.value.uncsrf = { token, updatedAt }
-            state.save = true
+					if (data) {
+						state.value = await storage.getItem(data) ?? {}
+						const token = await csrf.encrypt(event, ip)
+						state.value.uncsrf = { token, updatedAt }
+						state.save = true
 
-            const promises = [
-              storage.removeItem(data),
-              csrf.createCookie(event, token),
-            ]
+						await storage.removeItem(data)
+						state.valid = true
+					}
+				}
 
-            await Promise.all(promises)
-            state.valid = true
-          }
-        }
+				if (!state.valid) throw createError(uncsrf?.error ?? runtime.uncsrf.error)
+			}
+		}
 
-        if (!state.valid) throw createError(uncsrf?.error ?? runtime.uncsrf.error)
-      }
+		// Add to context
+		event.context.security = state.value
 
-    }
+		if (state.save) {
+			await storage.setItem(ip, state.value)
+			await csrf.createCookie(event, state.value.uncsrf.token)
+		}
+		else delete state.value.uncsrf.updatedAt
+	})
 
-    if (state.save) {
-      state.value.uncsrf.token = await csrf.encrypt(event, ip)
-      await storage.setItem(ip, state.value)
-    }
+	nitro.hooks.hook('render:html', async (_, { event }) => {
+		const { security } = event.context
 
-    nitro.hooks.hookOnce('render:html', async (_, { event }) => {
-      if (!state.save) {
-        const token = await csrf.encrypt(event, ip)
-        state.value.uncsrf = { token, updatedAt }
-        await storage.setItem(ip, state.value)
-      }
+		if (!security.uncsrf?.updatedAt) {
+			const ip = getRequestIP(event, { xForwardedFor: true }) || localhost
+			const token = await csrf.encrypt(event, ip)
+			const updatedAt = Date.now()
+			security.uncsrf = { token, updatedAt }
 
-      const { token = '' } = state.value.uncsrf ?? {}
-      await csrf.createCookie(event, token)
-    })
-  })
+			const storage = useStorage<Uncsrf>(name)
+			await storage.setItem(ip, security)
+		}
 
+		const { token } = security.uncsrf
+		if (token) await csrf.createCookie(event, token)
+	})
 })

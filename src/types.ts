@@ -1,45 +1,46 @@
 import type { StorageMounts } from 'nitropack'
 import type { NuxtError, CookieOptions } from 'nuxt/app'
-import type { EncryptAlgorithm } from './runtime/server/utils/uncsrf'
 import type { H3Error, HTTPMethod } from 'h3'
+import type { EncryptAlgorithm } from './runtime/server/utils/uncsrf'
 
 type Storage = StorageMounts[string] | keyof StorageMounts[string]
 
 export interface ModuleOptions {
-  ttl?:number
-  cookie?:CookieOptions & { name?:string }
-  secret?:string
-  encrypt:{
-    // secret?: Buffer
-    algorithm?: EncryptAlgorithm
-  },
+	enabled: boolean
+	ttl?: number
+	cookie?: CookieOptions & { name?: string }
+	secret?: string
+	encrypt: {
+		// secret?: Buffer
+		algorithm?: EncryptAlgorithm
+	}
 	storage?: Storage
-  error?: Pick<H3Error, 'cause' | 'data' | 'name' | 'statusMessage' | 'message' | 'statusCode'>
+	error?: Pick<H3Error, 'cause' | 'data' | 'name' | 'statusMessage' | 'message' | 'statusCode'>
 }
 
 type CsrfRules = {
-	methods?:HTTPMethod[]
+	methods?: HTTPMethod[]
 	error?: NuxtError
 } | false
 
 declare module 'nitropack' {
 	interface NitroRouteRules {
-		uncsrf?:CsrfRules
+		uncsrf?: CsrfRules
 	}
 	interface NitroRouteConfig {
-		uncsrf?:CsrfRules
+		uncsrf?: CsrfRules
 	}
 }
 
 export interface ModuleRuntimeConfig {
-  uncsrf?:ModuleOptions
+	uncsrf?: ModuleOptions
 }
 
 export interface ModulePublicRuntimeConfig {
-  uncsrf?: {
-    name: string,
-    path?: string,
-    httpOnly?: boolean,
-    sameSite?: boolean
-  }
+	uncsrf?: {
+		name: string
+		path?: string
+		httpOnly?: boolean
+		sameSite?: boolean
+	}
 }
