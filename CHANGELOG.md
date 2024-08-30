@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.1.1
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.1.0...v2.1.1)
+
+### 🩹 Fixes
+
+- Solve missing types ([3b0eae5](https://github.com/xarenas107/nuxt-uncsrf/commit/3b0eae5))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](http://github.com/xarenas107))
+
 ## v2.1.0
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.0.6...v2.1.0)
