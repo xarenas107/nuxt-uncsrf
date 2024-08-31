@@ -62,8 +62,12 @@ export default defineNitroPlugin(async (nitro) => {
 		const ip = getRequestIP(event, { xForwardedFor: true }) || localhost
 		event.context.clientAddress ??= ip
 
+		// Get token from request
+		let token = getCookie(event, cookie.name) ?? ''
+		const data = await csrf.decrypt(event, token) ?? ''
+
 		const updatedAt = Date.now()
-		const value = await storage.getItem(ip) ?? {}
+		const value = await storage.getItem(data) ?? {}
 
 		const state = {
 			remove: false,
@@ -72,14 +76,19 @@ export default defineNitroPlugin(async (nitro) => {
 			value,
 		}
 
-		// Get token from request
-		const token = getCookie(event, cookie.name) ?? ''
+		if (data && data !== ip) {
+			token = await csrf.encrypt(event, ip)
+			// state.value.uncsrf = { token, updatedAt }
+			await storage.removeItem(data)
+			state.save = true
+		}
+
 		const endAt = (state.value?.uncsrf?.updatedAt || 0) + (runtime.uncsrf.ttl || 0)
 		const expired = runtime.uncsrf.ttl ? endAt <= updatedAt : false
 
 		if (!state.value?.uncsrf || expired || !token) {
-			const token = await csrf.encrypt(event, ip)
-			state.value.uncsrf = { updatedAt, token }
+			token = await csrf.encrypt(event, ip)
+			// state.value.uncsrf = { updatedAt, token }
 			state.save = true
 		}
 
@@ -91,27 +100,12 @@ export default defineNitroPlugin(async (nitro) => {
 			if (!uncsrf?.methods || uncsrf?.methods?.includes(event.method)) {
 				// Validate token
 				state.valid = await csrf.verify(event, ip, token)
-
-				if (token && !state.valid) {
-					// Obtain decrypted token (ip)
-					const data = await csrf.decrypt(event, token)
-
-					if (data) {
-						state.value = await storage.getItem(data) ?? {}
-						const token = await csrf.encrypt(event, ip)
-						state.value.uncsrf = { token, updatedAt }
-						state.save = true
-
-						await storage.removeItem(data)
-						state.valid = true
-					}
-				}
-
 				if (!state.valid) throw createError(uncsrf?.error ?? runtime.uncsrf.error)
 			}
 		}
 
 		// Add to context
+		state.value.uncsrf = { token, updatedAt }
 		event.context.security = state.value
 
 		if (state.save) {
@@ -125,12 +119,13 @@ export default defineNitroPlugin(async (nitro) => {
 		const { security } = event.context
 
 		if (!security.uncsrf?.updatedAt) {
+			const storage = useStorage<Uncsrf>(name)
 			const ip = getRequestIP(event, { xForwardedFor: true }) || localhost
+
 			const token = await csrf.encrypt(event, ip)
 			const updatedAt = Date.now()
 			security.uncsrf = { token, updatedAt }
 
-			const storage = useStorage<Uncsrf>(name)
 			await storage.setItem(ip, security)
 		}
 
