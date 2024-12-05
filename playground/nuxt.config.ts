@@ -2,7 +2,7 @@ export default defineNuxtConfig({
 	compatibilityDate: '2024-08-29',
 	modules: ['../src/module'],
 	ssr: false,
-	devtools: { enabled: true },
+	devtools: { enabled: false },
 	imports: {
 		autoImport: true,
 	},
