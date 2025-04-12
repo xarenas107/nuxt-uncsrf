@@ -1,11 +1,11 @@
 export default defineNuxtConfig({
-	compatibilityDate: '2024-08-29',
+
 	modules: ['../src/module'],
 	ssr: false,
-	devtools: { enabled: false },
 	imports: {
 		autoImport: true,
 	},
+	devtools: { enabled: false },	compatibilityDate: '2024-08-29',
 	nitro: {
 		storage: {
 			dedicated: {

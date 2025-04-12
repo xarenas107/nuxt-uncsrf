@@ -21,13 +21,12 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/types.mts",
+      "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs",
       "require": "./dist/module.mjs"
     }
   },
   "main": "./dist/module.mjs",
-  "types": "./dist/types.mts",
   "files": [
     "dist"
   ],
