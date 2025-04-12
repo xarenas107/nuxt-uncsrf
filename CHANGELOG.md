@@ -1,6 +1,24 @@
 # Changelog
 
 
+## v2.2.2
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.1...v2.2.2)
+
+### 🩹 Fixes
+
+- Resave `token` on ip changes ([15c1960](https://github.com/xarenas107/nuxt-uncsrf/commit/15c1960))
+
+### 🏡 Chore
+
+- **release:** V2.2.1 ([632b358](https://github.com/xarenas107/nuxt-uncsrf/commit/632b358))
+- **node:** Update dependences ([8f8d333](https://github.com/xarenas107/nuxt-uncsrf/commit/8f8d333))
+- **node:** Update dependences ([d8f2c6a](https://github.com/xarenas107/nuxt-uncsrf/commit/d8f2c6a))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](https://github.com/xarenas107))
+
 ## v2.2.1
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.0...v2.2.1)
