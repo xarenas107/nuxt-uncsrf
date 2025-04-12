@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.2.3
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.2...v2.2.3)
+
+### 🩹 Fixes
+
+- **module-builder:** Solve some intregration errors ([a898f1a](https://github.com/xarenas107/nuxt-uncsrf/commit/a898f1a))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](https://github.com/xarenas107))
+
 ## v2.2.2
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.1...v2.2.2)
