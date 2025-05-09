@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v2.2.5
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.4...v2.2.5)
+
+### 🏡 Chore
+
+- **nitro:** Use native plugin types ([60d1dce](https://github.com/xarenas107/nuxt-uncsrf/commit/60d1dce))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](https://github.com/xarenas107))
+
 ## v2.2.4
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.3...v2.2.4)
