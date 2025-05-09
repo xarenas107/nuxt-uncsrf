@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v2.2.4
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.3...v2.2.4)
+
+### 🩹 Fixes
+
+- **module-builder:** Solve some intregration errors ([a898f1a](https://github.com/xarenas107/nuxt-uncsrf/commit/a898f1a))
+
+### 💅 Refactors
+
+- **nitro:** Use native plugin types ([44abdcc](https://github.com/xarenas107/nuxt-uncsrf/commit/44abdcc))
+
+### 🏡 Chore
+
+- **release:** V2.2.3 ([2a21827](https://github.com/xarenas107/nuxt-uncsrf/commit/2a21827))
+- **node:** Update dependences ([5fc831f](https://github.com/xarenas107/nuxt-uncsrf/commit/5fc831f))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](https://github.com/xarenas107))
+
 ## v2.2.3
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.2...v2.2.3)
