@@ -1,10 +1,8 @@
 import { defineNitroPlugin, getRouteRules, useStorage } from 'nitropack/runtime'
-import type { NitroApp, StorageMounts } from 'nitropack'
+import type { StorageMounts } from 'nitropack'
 import { createError, getCookie, getRequestIP } from 'h3'
 import * as csrf from './utils/uncsrf'
 import { useRuntimeConfig } from '#imports'
-
-type NitroAppPlugin = (nitro: NitroApp) => void
 
 type Uncsrf = {
 	uncsrf?: {
