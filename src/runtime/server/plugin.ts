@@ -1,4 +1,4 @@
-import { getRouteRules, useStorage } from 'nitropack/runtime'
+import { defineNitroPlugin, getRouteRules, useStorage } from 'nitropack/runtime'
 import type { NitroApp, StorageMounts } from 'nitropack'
 import { createError, getCookie, getRequestIP } from 'h3'
 import * as csrf from './utils/uncsrf'
@@ -19,10 +19,6 @@ declare module 'h3' {
 	interface H3EventContext {
 		security: Uncsrf
 	}
-}
-
-function defineNitroPlugin(def: NitroAppPlugin): NitroAppPlugin {
-	return def
 }
 
 export default defineNitroPlugin(async (nitro) => {
