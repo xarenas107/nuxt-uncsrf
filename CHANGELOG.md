@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v2.2.5
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.3...v2.2.5)
+
+### 🏡 Chore
+
+- Update compatibility to `nuxt 4` ([fc735c6](https://github.com/xarenas107/nuxt-uncsrf/commit/fc735c6))
+- **release:** V2.2.4 ([4057b3b](https://github.com/xarenas107/nuxt-uncsrf/commit/4057b3b))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](https://github.com/xarenas107))
+
 ## v2.2.4
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.3...v2.2.4)
