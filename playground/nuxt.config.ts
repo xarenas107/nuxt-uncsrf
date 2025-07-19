@@ -5,7 +5,7 @@ export default defineNuxtConfig({
 	imports: {
 		autoImport: true,
 	},
-	devtools: { enabled: false },	compatibilityDate: '2024-08-29',
+	devtools: { enabled: false },	compatibilityDate: '2025-07-19',
 	nitro: {
 		storage: {
 			dedicated: {
