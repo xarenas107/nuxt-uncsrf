@@ -1,68 +1,68 @@
-import { getCookie, defineEventHandler } from 'h3'
-import { getRouteRules, useStorage } from 'nitropack/runtime'
-import type { ModuleOptions } from '../../types'
-import { useIP } from './utils/useIP'
+import { createError, defineEventHandler, getCookie, getRouteRules, useRuntimeConfig } from 'nuxt/server'
+import { useKV } from 'nitro/kv'
 
-import * as csrf from './utils/uncsrf'
-import type { Options } from './utils/uncsrf'
-import { useRuntimeConfig, createError } from '#imports'
+import { decrypt, encrypt, verify, createCookie } from './utils/uncsrf'
+import { useIP } from './utils/use-ip'
 
-interface Uncsrf {
-	uncsrf?: {
-		token: string
-		updatedAt: number
-	}
-}
+import type { SecurityContext } from './types'
+import type { ServerHandlerMethod } from 'nuxt/schema'
 
 export default defineEventHandler(async (event) => {
-	const { uncsrf } = getRouteRules(event)
-	const runtime = useRuntimeConfig(event)
-	const { cookie } = runtime.public.uncsrf ?? {}
+  event.context.security ??= {}
 
-	const isApi = event.path.startsWith('/api')
-	const isAllowed = isApi && !uncsrf && uncsrf !== false
+  const { uncsrf } = getRouteRules(event)
+  if (uncsrf === false) return
 
-	if (isAllowed || uncsrf) {
-		const config = runtime.uncsrf as ModuleOptions & { encrypt: Options }
-		const name = typeof config.storage === 'string' ? config.storage : 'uncsrf'
+  const runtime = useRuntimeConfig()
+  const { cookie } = runtime.public.uncsrf
+  const { ttl = 0, error } = runtime.uncsrf
+  const storage = useKV<SecurityContext>(runtime.uncsrf.storage)
 
-		// Protect methods
-		if (uncsrf?.methods && !uncsrf?.methods?.includes(event.method)) return
+  const ip = useIP(event)
+  event.context.clientAddress ??= ip
 
-		const storage = useStorage<Uncsrf>(name)
+  let token = getCookie(event, cookie.name) || ''
+  const data = await decrypt(token) || ''
 
-		const ip = useIP(event)
-		event.context.clientAddress ||= ip
+  const updatedAt = Date.now()
+  const value = await storage.getItem<SecurityContext>(data) || {}
+  let save = false
 
-		// Get token from request
-		let token = getCookie(event, cookie.name) ?? ''
+  if (data && data !== ip) {
+    token = await encrypt(ip)
+    await storage.removeItem(data)
+    save = true
+  }
 
-		// Validate token
-		const state = {
-			valid: await csrf.verify(event, ip, token),
-		}
+  const endAt = (value.uncsrf?.updatedAt || 0) + ttl
+  const expired = ttl ? endAt <= updatedAt : false
 
-		if (token && !state.valid) {
-			// Obtain decrypted token (ip)
-			const data = await csrf.decrypt(event, token)
+  if (!value.uncsrf || expired || !token) {
+    token = await encrypt(ip)
+    save = true
+  }
 
-			if (data) {
-				const item = await storage.getItem(data) ?? {}
+  const api = event.url.pathname.startsWith('/api')
+  const allowed = api && !uncsrf
 
-				item.uncsrf = {
-					token: await csrf.encrypt(event, ip),
-					updatedAt: Date.now(),
-				}
+  if (allowed || uncsrf) {
+    const method = event.req.method as ServerHandlerMethod
+    if (!uncsrf?.methods?.length || uncsrf.methods.includes(method)) {
+      const valid = await verify(ip, token)
+      if (!valid) throw createError(uncsrf?.error ?? error ?? {})
+    }
+  }
 
-				token = item.uncsrf.token
+  // Add to context
+  const security: SecurityContext = { ...value, uncsrf: { token, updatedAt } }
+  event.context.security = security
 
-				const promises = [storage.setItem(ip, item), csrf.createCookie(event, token)]
-				if (data !== ip) promises.push(storage.removeItem(data))
-				await Promise.all(promises)
-				state.valid = true
-			}
-		}
+  if (save) {
+    if (!security.uncsrf?.token) return
+    await storage.setItem(ip, security)
+    await createCookie(event, security.uncsrf.token)
+    return
+  }
 
-		if (!state.valid) throw createError(uncsrf?.error ?? runtime.uncsrf.error)
-	}
+  delete security.uncsrf?.updatedAt
 })
