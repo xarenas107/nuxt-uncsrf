@@ -23,6 +23,8 @@ export interface SecurityContext {
 export interface ModuleOptions {
   enabled: boolean
   ttl?: number
+  /** Route the client fetches the httpOnly token from, `false` to disable it */
+  endpoint?: string | false
   cookie?: Cookie
   secret: string
   encrypt: {
@@ -33,11 +35,12 @@ export interface ModuleOptions {
 }
 
 export interface ModuleRuntimeConfig {
-  uncsrf: Omit<ModuleOptions, 'cookie'>
+  uncsrf: Omit<ModuleOptions, 'cookie' | 'endpoint'>
 }
 
 export interface ModulePublicRuntimeConfig {
   uncsrf: {
     cookie: Cookie & { name: string }
+    endpoint: string | false
   }
 }

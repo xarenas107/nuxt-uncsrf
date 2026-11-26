@@ -12,6 +12,8 @@ export default defineEventHandler(async (event) => {
   if (uncsrf === false || uncsrf?.enabled === false) return
 
   const { pathname } = event.url
+
+  // Apply to /api on default
   const api = pathname.startsWith('/api')
   if (!uncsrf && !api) return
 

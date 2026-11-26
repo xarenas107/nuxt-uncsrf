@@ -20,6 +20,7 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     enabled: true,
     ttl: 1000 * 60 * 60 * 24 * 7,
+    endpoint: '/_uncsrf',
     cookie: {
       name: 'x-csrf-token',
       path: '/',
@@ -57,21 +58,27 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.build.transpile.push(runtimeDir)
 
     // Add default options
-    const { cookie, storage } = options
+    const { cookie, storage, endpoint } = options
     const runtime = nuxt.options.runtimeConfig
-    runtime.public.uncsrf = defu(runtime.public.uncsrf, { cookie })
+    runtime.public.uncsrf = defu(runtime.public.uncsrf, { cookie, endpoint })
 
     // Mount a dedicated KV storage when a driver config is given,
     addStorage(nuxt, options)
 
     delete options?.cookie
+    delete options?.endpoint
     runtime.uncsrf = defu(runtime.uncsrf, {
       ...options,
       storage: typeof storage === 'string' ? storage : configKey,
     })
 
-    addServerHandler({ route: '/**', middleware: true, handler: { nitro3: resolve(serverDir, 'middleware') } })
-    addRendererPlugin({ nitro3: resolve(serverDir, 'plugin') })
+    addServerHandler({ route: '/**', middleware: true, handler: resolve(serverDir, 'middleware') })
+
+    // Lets the client read the httpOnly token
+    if (endpoint) {
+      addServerHandler({ route: endpoint, method: 'get', handler: resolve(serverDir, 'token') })
+    }
+    addRendererPlugin(resolve(serverDir, 'plugin'))
     addImportsDir(resolve(runtimeDir, 'composables'))
 
     addTypeTemplate({
@@ -81,7 +88,7 @@ export default defineNuxtModule<ModuleOptions>({
       },
     }, { nitro: true, nuxt: true, node: true })
 
-    logger.success('Uncsrf initialized')
+    logger.success('Csrf protection initialized')
   },
 })
 

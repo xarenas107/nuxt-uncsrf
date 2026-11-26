@@ -1,6 +1,6 @@
 <template>
   <div>
-    Nuxt csrf module playground! {{ { csrf } }}
+    Nuxt csrf module playground! {{ { token } }}
   </div>
   <button @click="execute()">
     fetch
@@ -10,6 +10,6 @@
 </template>
 
 <script lang="ts" setup>
-const { csrf } = useCsrf()
+const { token } = useCsrf()
 const { data, execute } = await useFetch('/api/test', { immediate: false })
 </script>

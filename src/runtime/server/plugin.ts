@@ -4,8 +4,9 @@ import session from './utils/session'
 import { definePlugin } from 'nitro'
 
 export default definePlugin(({ hooks }) => {
-  // Before rendering, so the token is available to `csrf` and to requests made by the page
-  hooks.hook('render:html', async (_, { event }) => {
+  // Before rendering (`render:html` runs after it), so the token is available to `useCsrf`
+  // and to the requests made by the page
+  hooks.hook('render:route', async (_, { event }) => {
     // Cached pages are shared between clients
     const rules = getRouteRules(event)
     if (import.meta.prerender || rules.cache || rules.isr) return
@@ -13,7 +14,7 @@ export default definePlugin(({ hooks }) => {
     const runtime = useRuntimeConfig()
     const { uncsrf } = runtime.public
     const cookie = getCookie(event, uncsrf.cookie.name)
-    const current = await session.resolve(cookie)
+    const current = await session.resolve(cookie, false)
     if (!current || current.expired) return session.issue(event, current)
 
     event.context.security = current.item

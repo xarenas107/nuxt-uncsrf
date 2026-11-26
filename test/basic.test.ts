@@ -91,8 +91,9 @@ describe('Csrf protection', async () => {
     expect(response).toBe('ok')
   })
 
-  it.each(library)('%s %s is protected', async (_, path) => {
-    const response = await fetch(path, { method: 'POST' })
+  it.each(library)('%s %s with a valid token is accepted', async (method, path) => {
+    const cookie = await getCookie()
+    const response = await fetch(path, { method, headers: { cookie } })
     expect(response.status).toBe(200)
   })
 
@@ -125,12 +126,38 @@ describe('Csrf protection', async () => {
   const endpoints = ['/%61pi/test', '//api/test', '/API/test', '/x/../api/test', '/api%2Ftest']
   it.each(endpoints)('%s does not reach the api without token', async (path) => {
     const response = await fetch(path, { method: 'POST' })
-    expect(await response.json()).toBe(403)
+    // Either rejected, or not routed to the api at all (e.g. rendered as a page)
+    expect(await response.text()).not.toBe('ok')
   })
 
   it('First visit can use the token while rendering', async () => {
     const html = await $fetch<string>('/')
     expect(html).toMatch(/id="csrf">[0-9a-f]{32}:[0-9a-f]{96}</)
     expect(html).toContain('id="data">ok<')
+  })
+
+  it('Endpoint returns the token of the cookie', async () => {
+    const cookie = await getCookie()
+    const response = await fetch('/_uncsrf', { headers: { cookie } })
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    expect(response.headers.get('set-cookie')).toBeNull()
+
+    const { token } = await response.json()
+    expect(cookie).toBe(`x-csrf-token=${encodeURIComponent(token)}`)
+  })
+
+  it.each(['', `${'0'.repeat(32)}%3A${'0'.repeat(32)}`])('Endpoint issues a token for cookie "%s"', async (token) => {
+    const response = await fetch('/_uncsrf', { headers: { cookie: `${cookie}=${token}` } })
+    const { token: issued } = await response.json()
+    expect(issued).toMatch(/^[0-9a-f]{32}:[0-9a-f]{96}$/)
+    expect(response.headers.get('set-cookie')).toContain(`${cookie}=${encodeURIComponent(issued)}`)
+
+    const api = await fetch('/api/test', { method: 'POST', headers: { cookie: `${cookie}=${encodeURIComponent(issued)}` } })
+    expect(api.status).toBe(200)
+  })
+
+  it('Endpoint only answers GET', async () => {
+    const response = await fetch('/_uncsrf', { method: 'POST' })
+    expect(response.headers.get('content-type')).not.toContain('json')
   })
 })

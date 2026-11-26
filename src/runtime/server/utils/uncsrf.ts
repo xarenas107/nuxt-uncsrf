@@ -7,7 +7,7 @@ import type { RequestEvent } from 'nuxt/server'
 
 export type EncryptAlgorithm = CipherCCMTypes | CipherOCBTypes | CipherGCMTypes | string
 type Create = (event: RequestEvent, secret: string) => Promise<string | null>
-type Decrypt = (token: string) => Promise<string | undefined>
+type Decrypt = (token: string, emit?: boolean) => Promise<string | undefined>
 
 const encoding: BufferEncoding = 'hex'
 const input: BufferEncoding = 'utf8'
@@ -26,7 +26,7 @@ export const createCookie: Create = async (event, secret) => {
 export const encrypt = (id: string) => {
   const { uncsrf } = useRuntimeConfig()
 
-  return catchError(async () => {
+  return catchError(() => {
     const secret = useHash(uncsrf.secret)
     const iv = randomBytes(16)
     const cipher = createCipheriv(uncsrf.encrypt.algorithm, secret, iv)
@@ -36,15 +36,18 @@ export const encrypt = (id: string) => {
   }, 403)
 }
 
-export const decrypt: Decrypt = async (token) => {
+export const decrypt: Decrypt = async (token, emit = true) => {
   const { uncsrf } = useRuntimeConfig()
 
-  return catchError(() => {
+  const execute = () => {
     const [iv = '', encrypted = ''] = token.split(':')
     const secret = useHash(uncsrf.secret)
     const decipher = createDecipheriv(uncsrf.encrypt.algorithm, secret, Buffer.from(iv, encoding))
     return decipher.update(encrypted, encoding, input) + decipher.final(input)
-  }, 403)
+  }
+
+  if (emit) return catchError(execute, 403, true)
+  return catchError(execute, 403, false)
 }
 
 const useHash = (key: string) => {

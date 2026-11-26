@@ -10,7 +10,6 @@ describe('Csrf token expiration', async () => {
       uncsrf: {
         ttl: 1,
       },
-
       compatibilityDate: 'latest',
     },
   })

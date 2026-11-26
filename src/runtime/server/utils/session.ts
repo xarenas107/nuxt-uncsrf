@@ -17,10 +17,11 @@ function useStorage() {
   return useKV<SecurityContext>(uncsrf.storage)
 }
 
-async function resolve(token?: string) {
+async function resolve(token?: string, emit = true) {
   if (!token) return null
 
-  const id = await decrypt(token)
+  // A token that cannot be decrypted is forged or malformed, not an error
+  const id = await decrypt(token, emit)
   if (!id) return null
 
   const storage = useStorage()
@@ -40,7 +41,7 @@ async function issue(event: RequestEvent, previous?: Session | null) {
   if (previous) await storage.removeItem(previous.id)
 
   const id = randomUUID()
-  const token = await encrypt(id)
+  const token = encrypt(id)
 
   const updatedAt = Date.now()
   const uncsrf = { token, updatedAt }

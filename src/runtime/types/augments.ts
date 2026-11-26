@@ -22,7 +22,7 @@ declare module 'nuxt/schema' {
   }
 }
 
-declare module 'nitro/h3' {
+declare module 'h3' {
   interface H3EventContext {
     security?: SecurityContext
   }
