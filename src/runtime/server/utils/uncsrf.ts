@@ -1,27 +1,16 @@
 import { createCipheriv, createDecipheriv, randomBytes, createHash } from 'node:crypto'
-import type { CipherCCMTypes, CipherOCBTypes, CipherGCMTypes } from 'node:crypto'
-import { setCookie, useRuntimeConfig, createError } from 'nuxt/server'
+import { setCookie, useRuntimeConfig } from 'nuxt/server'
+import catchError from './catch-error'
 
+import type { CipherCCMTypes, CipherOCBTypes, CipherGCMTypes } from 'node:crypto'
 import type { RequestEvent } from 'nuxt/server'
 
 export type EncryptAlgorithm = CipherCCMTypes | CipherOCBTypes | CipherGCMTypes | string
 type Create = (event: RequestEvent, secret: string) => Promise<string | null>
-type Verify = (secret: string, token: string) => Promise<boolean>
 type Decrypt = (token: string) => Promise<string | undefined>
 
 const encoding: BufferEncoding = 'hex'
 const input: BufferEncoding = 'utf8'
-
-const catchError = <T>(callback: () => T) => {
-  try {
-    return callback()
-  }
-  catch (error) {
-    const err = error as Record<string, unknown>
-    err.message = `Uncsrf: ${err.message}`
-    throw createError(err)
-  }
-}
 
 export const createCookie: Create = async (event, secret) => {
   const runtime = useRuntimeConfig()
@@ -34,17 +23,17 @@ export const createCookie: Create = async (event, secret) => {
   return secret
 }
 
-export const encrypt = (ip: string) => {
+export const encrypt = (id: string) => {
   const { uncsrf } = useRuntimeConfig()
-  const secret = useHash(uncsrf.secret)
 
   return catchError(async () => {
+    const secret = useHash(uncsrf.secret)
     const iv = randomBytes(16)
     const cipher = createCipheriv(uncsrf.encrypt.algorithm, secret, iv)
-    const encrypted = cipher.update(ip, input, encoding) + cipher.final(encoding)
+    const encrypted = cipher.update(id, input, encoding) + cipher.final(encoding)
     const token = `${iv.toString(encoding)}:${encrypted}`
     return token
-  })
+  }, 403)
 }
 
 export const decrypt: Decrypt = async (token) => {
@@ -55,17 +44,7 @@ export const decrypt: Decrypt = async (token) => {
     const secret = useHash(uncsrf.secret)
     const decipher = createDecipheriv(uncsrf.encrypt.algorithm, secret, Buffer.from(iv, encoding))
     return decipher.update(encrypted, encoding, input) + decipher.final(input)
-  })
-}
-
-export const verify: Verify = async (secret, token) => {
-  try {
-    const [iv, encrypted] = token.split(':')
-    if (!iv || !encrypted) return Promise.resolve(false)
-    const decrypted = await decrypt(token)
-    return decrypted === secret
-  }
-  catch { return false }
+  }, 403)
 }
 
 const useHash = (key: string) => {

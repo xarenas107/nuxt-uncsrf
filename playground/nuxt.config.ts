@@ -9,11 +9,14 @@ export default defineNuxtConfig({
     kv: {
       dedicated: {
         driver: 'fs',
-        base: './playground/db',
+        base: './playground/.db',
       },
     },
   },
   uncsrf: {
     storage: 'dedicated',
+    cookie: {
+      httpOnly: false,
+    },
   },
 })

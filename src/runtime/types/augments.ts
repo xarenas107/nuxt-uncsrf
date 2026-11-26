@@ -3,6 +3,7 @@ import type { NuxtErrorDetails } from 'nuxt/server'
 import type { SecurityContext } from '../server/types'
 
 export type UncsrfRule = {
+  enabled?: boolean
   methods?: ServerHandlerMethod[]
   error?: NuxtErrorDetails
 } | false

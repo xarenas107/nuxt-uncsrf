@@ -23,10 +23,10 @@ export default defineNuxtModule<ModuleOptions>({
     cookie: {
       name: 'x-csrf-token',
       path: '/',
-      httpOnly: false,
+      httpOnly: true,
       sameSite: true,
     },
-    secret: 'Put your secret key here',
+    secret: process.env.NUXT_UNCSRF_SECRET,
     encrypt: {
       algorithm: 'aes-256-cbc',
     },
@@ -47,6 +47,11 @@ export default defineNuxtModule<ModuleOptions>({
     const { resolve } = createResolver(import.meta.url)
     const runtimeDir = resolve('./runtime')
     const serverDir = resolve(runtimeDir, 'server')
+
+    if (!options.secret) {
+      options.secret = 'Put your secret key here'
+      logger.warn('No secret provided, csrf tokens can be forged. Set `uncsrf.secret` in `nuxt.config` or the `NUXT_UNCSRF_SECRET` environment variable.')
+    }
 
     // Transpile and alias runtime
     nuxt.options.build.transpile.push(runtimeDir)

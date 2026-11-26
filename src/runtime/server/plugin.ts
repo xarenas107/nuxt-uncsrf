@@ -1,30 +1,22 @@
-import { useRuntimeConfig } from 'nuxt/server'
-import { useKV } from 'nitro/kv'
+import { getCookie, getRouteRules, useRuntimeConfig } from 'nuxt/server'
+import { createCookie } from './utils/uncsrf'
+import session from './utils/session'
+import { definePlugin } from 'nitro'
 
-import type { RendererPlugin } from 'nuxt/server'
-import { encrypt, createCookie } from './utils/uncsrf'
-import { useIP } from './utils/use-ip'
-import type { SecurityContext } from './types'
-
-const plugin: RendererPlugin = ({ hooks }) => {
+export default definePlugin(({ hooks }) => {
+  // Before rendering, so the token is available to `csrf` and to requests made by the page
   hooks.hook('render:html', async (_, { event }) => {
-    event.context.security ??= {}
-    const security = event.context.security
+    // Cached pages are shared between clients
+    const rules = getRouteRules(event)
+    if (import.meta.prerender || rules.cache || rules.isr) return
 
-    if (!security.uncsrf?.updatedAt) {
-      const runtime = useRuntimeConfig()
-      const storage = useKV<SecurityContext>(runtime.uncsrf.storage)
-      const ip = useIP(event)
+    const runtime = useRuntimeConfig()
+    const { uncsrf } = runtime.public
+    const cookie = getCookie(event, uncsrf.cookie.name)
+    const current = await session.resolve(cookie)
+    if (!current || current.expired) return session.issue(event, current)
 
-      const token = await encrypt(ip)
-      const updatedAt = Date.now()
-
-      security.uncsrf = { token, updatedAt }
-      await storage.setItem(ip, security)
-    }
-
-    await createCookie(event, security.uncsrf.token)
+    event.context.security = current.item
+    await createCookie(event, cookie!)
   })
-}
-
-export default plugin
+})

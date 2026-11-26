@@ -36,7 +36,9 @@ export default defineNuxtConfig({
 })
 ```
 
-By default csrf protection is applied to all routes except for `/_nuxt` and `/__nuxt` with `GET` method. If you need more control, use nitro route rules.
+By default csrf protection is applied only for routes `/api`. All methods are protected, including `GET`, `HEAD` and `OPTIONS`. If you need more control, use nitro route rules.
+
+Each browser gets a random identifier, stored encrypted in the `x-csrf-token` cookie when a page is rendered. Requests without a valid token are rejected with a `403`. Set `NUXT_UNCSRF_SECRET` or `uncsrf.secret` to your own secret.
 
 > Use false to disable protection
 
@@ -44,6 +46,19 @@ By default csrf protection is applied to all routes except for `/_nuxt` and `/__
 routeRules:{
   '/locale/**': {
     uncsrf: false,
+  }
+}
+```
+
+> Protect other routes, or only some methods
+
+```js
+routeRules:{
+  '/form': {
+    uncsrf: {},
+  },
+  '/api/**': {
+    uncsrf: { methods: ['POST', 'PUT', 'PATCH', 'DELETE'] },
   }
 }
 ```
@@ -66,7 +81,7 @@ export default defineNuxtConfig({
 ```js
 export default defineNuxtConfig({
   nitro:{
-    storage:{
+    kv:{
       'security':{
         driver:'memory',
       }
@@ -77,6 +92,14 @@ export default defineNuxtConfig({
   } 
 })
 ```
+
+### Limitations
+
+- The token is only read from the cookie, so protection relies on `SameSite=Strict`. It does not cover attacks from sibling subdomains.
+- Prerendered and cached pages (`cache`, `swr`, `isr`) do not issue tokens, a dynamic page has to be visited first.
+- CORS preflight requests carry no cookies, so `OPTIONS` is rejected unless excluded with `methods`.
+- An expired token is renewed once. Other requests sent at the same time with it can be rejected.
+- Identifiers that are no longer used are not removed from storage automatically.
 
 That's it! You can now use @nuxt/uncsrf in your Nuxt app ✨
 
