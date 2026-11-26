@@ -1,6 +1,34 @@
 # Changelog
 
 
+## v3.0.0
+
+[compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.6...v3.0.0)
+
+### 🚀 Enhancements
+
+- ⚠️  Migrate to nitro 3 and nuxt 4.7+ ([3536960](https://github.com/xarenas107/nuxt-uncsrf/commit/3536960))
+- ⚠️  Issue per-client session tokens instead of ip-based ones ([5af6842](https://github.com/xarenas107/nuxt-uncsrf/commit/5af6842))
+- ⚠️  Expose the httpOnly token through a `/_uncsrf` endpoint ([89a529e](https://github.com/xarenas107/nuxt-uncsrf/commit/89a529e))
+
+### 🏡 Chore
+
+- Update compatibility to `nuxt 4` ([fc735c6](https://github.com/xarenas107/nuxt-uncsrf/commit/fc735c6))
+- **release:** V2.2.4 ([4057b3b](https://github.com/xarenas107/nuxt-uncsrf/commit/4057b3b))
+- **release:** V2.2.5 ([526f50b](https://github.com/xarenas107/nuxt-uncsrf/commit/526f50b))
+- **release:** V2.2.6 ([11dbb65](https://github.com/xarenas107/nuxt-uncsrf/commit/11dbb65))
+- Add pnpm lockfile and workspace config ([668d4c1](https://github.com/xarenas107/nuxt-uncsrf/commit/668d4c1))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️  Migrate to nitro 3 and nuxt 4.7+ ([3536960](https://github.com/xarenas107/nuxt-uncsrf/commit/3536960))
+- ⚠️  Issue per-client session tokens instead of ip-based ones ([5af6842](https://github.com/xarenas107/nuxt-uncsrf/commit/5af6842))
+- ⚠️  Expose the httpOnly token through a `/_uncsrf` endpoint ([89a529e](https://github.com/xarenas107/nuxt-uncsrf/commit/89a529e))
+
+### ❤️ Contributors
+
+- Xavier ([@xarenas107](https://github.com/xarenas107))
+
 ## v2.2.6
 
 [compare changes](https://github.com/xarenas107/nuxt-uncsrf/compare/v2.2.5...v2.2.6)
