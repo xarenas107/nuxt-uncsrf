@@ -1,79 +1,55 @@
-import { createCipheriv, createDecipheriv, randomBytes, randomUUID, createHash } from 'node:crypto'
-import type { CipherCCMTypes, CipherOCBTypes, CipherGCMTypes, Encoding } from 'node:crypto'
-import { setCookie } from 'h3'
-import { useRuntimeConfig } from 'nitropack/runtime'
+import { createCipheriv, createDecipheriv, randomBytes, createHash } from 'node:crypto'
+import { setCookie, useRuntimeConfig } from 'nuxt/server'
+import catchError from './catch-error'
 
-import type { H3Event } from 'h3'
-import { createError } from '#imports'
-
-export interface Options {
-	algorithm: EncryptAlgorithm
-}
+import type { CipherCCMTypes, CipherOCBTypes, CipherGCMTypes } from 'node:crypto'
+import type { RequestEvent } from 'nuxt/server'
 
 export type EncryptAlgorithm = CipherCCMTypes | CipherOCBTypes | CipherGCMTypes | string
-type Create = (event: H3Event, secret: string) => Promise<string | null>
-type Verify = (event: H3Event, secret: string, token: string) => Promise<boolean>
-type Decrypt = (event: H3Event, token: string) => Promise<string | null>
+type Create = (event: RequestEvent, secret: string) => Promise<string | null>
+type Decrypt = (token: string, emit?: boolean) => Promise<string | undefined>
 
 const encoding: BufferEncoding = 'hex'
-const input: Encoding = 'utf8'
-
-const catchError = <T>(callback: () => T) => {
-	try {
-		return callback()
-	}
-	catch (error) {
-		const err = error as Record<string, unknown>
-		err.message = `Uncsrf: ${err.message}`
-		throw createError(err)
-	}
-}
+const input: BufferEncoding = 'utf8'
 
 export const createCookie: Create = async (event, secret) => {
-	const runtime = useRuntimeConfig()
-	const { cookie } = runtime.public.uncsrf ?? {}
+  const runtime = useRuntimeConfig()
+  const { cookie } = runtime.public.uncsrf
 
-	setCookie(event, cookie.name, secret, {
-		secure: !import.meta.dev,
-		...cookie,
-	})
-	return secret
+  setCookie(event, cookie.name, secret, {
+    secure: !import.meta.dev,
+    ...cookie,
+  })
+  return secret
 }
 
-export const encrypt = (event: H3Event, ip: string) => {
-	const { uncsrf } = useRuntimeConfig()
-	const secret = useHash(uncsrf.secret)
+export const encrypt = (id: string) => {
+  const { uncsrf } = useRuntimeConfig()
 
-	return catchError(async () => {
-		const iv = randomBytes(16)
-		const cipher = createCipheriv(uncsrf.encrypt.algorithm, secret, iv)
-		const encrypted = cipher.update(ip, input, encoding) + cipher.final(encoding)
-		const token = `${iv.toString(encoding)}:${encrypted}`
-		return token
-	})
+  return catchError(() => {
+    const secret = useHash(uncsrf.secret)
+    const iv = randomBytes(16)
+    const cipher = createCipheriv(uncsrf.encrypt.algorithm, secret, iv)
+    const encrypted = cipher.update(id, input, encoding) + cipher.final(encoding)
+    const token = `${iv.toString(encoding)}:${encrypted}`
+    return token
+  }, 403)
 }
 
-export const decrypt: Decrypt = async (event, token) => {
-	const { uncsrf } = useRuntimeConfig()
+export const decrypt: Decrypt = async (token, emit = true) => {
+  const { uncsrf } = useRuntimeConfig()
 
-	return catchError(() => {
-		const [iv, encrypted] = token.split(':')
-		const secret = useHash(uncsrf.secret)
-		const decipher = createDecipheriv(uncsrf.encrypt.algorithm, secret, Buffer.from(iv, encoding))
-		return decipher.update(encrypted, encoding, input) + decipher.final(input)
-	})
+  const execute = () => {
+    const [iv = '', encrypted = ''] = token.split(':')
+    const secret = useHash(uncsrf.secret)
+    const decipher = createDecipheriv(uncsrf.encrypt.algorithm, secret, Buffer.from(iv, encoding))
+    return decipher.update(encrypted, encoding, input) + decipher.final(input)
+  }
+
+  if (emit) return catchError(execute, 403, true)
+  return catchError(execute, 403, false)
 }
 
-export const verify: Verify = async (event, secret, token) => {
-	try {
-		const [iv, encrypted] = token.split(':')
-		if (!iv || !encrypted) return Promise.resolve(false)
-		const decrypted = await decrypt(event, token)
-		return decrypted === secret
-	}
-	catch { return false }
+const useHash = (key: string) => {
+  return createHash('sha256').update(key).digest('hex').substring(0, 32)
 }
-
-const useHash = (key: string) => createHash('sha256').update(key).digest('hex').substring(0, 32)
-
-export const randomSecret = () => randomUUID()
